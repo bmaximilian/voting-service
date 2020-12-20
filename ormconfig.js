@@ -24,11 +24,11 @@ module.exports = {
     type: 'postgres',
     url: getDatabaseUrl(),
     schema: process.env.DB_SCHEMA || 'public',
-    entities: [join(rootDir, 'src/persistence/entities/*')],
-    migrations: [join(rootDir, 'src/persistence/migrations/*')],
+    entities: [join(rootDir, 'infrastructure/persistence/typeorm/entities/*')],
+    migrations: [join(rootDir, 'infrastructure/persistence/typeorm/migrations/*')],
     synchronize: false, // Database changes should only happen via migration scripts.
     cli: {
-        migrationsDir: join(rootDir, 'src/persistence/migrations/*'),
+        migrationsDir: join(rootDir, 'infrastructure/persistence/typeorm/migrations/*'),
     },
     ssl: process.env.NODE_ENV === 'production',
 };

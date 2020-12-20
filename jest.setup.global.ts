@@ -4,16 +4,28 @@ const childProcess = require('child_process');
 const { join } = require('path');
 const { existsSync } = require('fs');
 const dotenv = require('dotenv');
+const dotEnvExpand = require('dotenv-expand');
 
-if (existsSync(join(__dirname, '.env.secrets'))) {
-    dotenv.config({
-        path: join(__dirname, '.env.secrets'),
+[
+    !process.env.DOCKER && join(__dirname, '.env.local'),
+    join(__dirname, `.env.${process.env.NODE_ENV || 'development'}`),
+    join(__dirname, '.env'),
+]
+    .filter(Boolean)
+    .forEach((dotenvFile) => {
+        if (existsSync(dotenvFile)) {
+            dotEnvExpand(
+                dotenv.config({
+                    path: dotenvFile,
+                }),
+            );
+        }
     });
-}
 
 function dropSchemaAndMigrate(): void {
     childProcess.execSync('npm run typeorm -- schema:drop');
-    childProcess.execSync('npm run migration:run');
+    childProcess.execSync(`npm run typeorm -- query "CREATE SCHEMA IF NOT EXISTS ${process.env.DB_SCHEMA};"`);
+    childProcess.execSync('npm run migration:run:dev');
 }
 
 module.exports = (): void => {

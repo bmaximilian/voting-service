@@ -20,7 +20,8 @@
     "baseUrl": "./",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "incremental": true
+    "incremental": true,
+    "allowJs": false
   },
   "exclude": ["node_modules"]
 }

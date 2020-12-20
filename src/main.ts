@@ -1,8 +1,4 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { bootstrap } from './bootstrap';
 
-async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule);
-    await app.listen(3000);
-}
-bootstrap();
+// eslint-disable-next-line no-console
+bootstrap(process.env.PORT || 3000).catch((reason) => console.error(reason));

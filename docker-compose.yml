@@ -3,7 +3,7 @@ services:
   db:
     ports:
       - "${DATABASE_PORT:-5432}:5432"
-    image: postgres:11
+    image: postgres:13-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -12,7 +12,7 @@ services:
       - pgsql-data:/var/lib/postgresql/data
   voting-service:
     build: .
-    command: bash -c "npm i && ./start.sh"
+    command: sh -c "npm i && /bin/sh start.sh"
     environment:
       NODE_ENV: development
       PORT: 3000
@@ -23,14 +23,22 @@ services:
       DB_DATABASE: voting
       DB_SCHEMA: public
       DB_SSL: 0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       SSL_REDIRECTION_ENABLED: 0
     volumes:
       - .:/opt/app
     ports:
       - ${VOTING_SERVICE_PORT:-3000}:3000
-      - 9229:9229
+      - ${VOTING_SERVICE_DEBUG_PORT:-9229}:9229
     depends_on:
       - db
+  redis:
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    image: redis:6-alpine
+    volumes:
+      - redis-data:/data
 volumes:
   pgsql-data:
   redis-data:
