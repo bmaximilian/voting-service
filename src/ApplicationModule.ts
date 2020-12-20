@@ -2,6 +2,7 @@ import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import typeOrmConfig from '../ormconfig';
 import { JwtDecodeMiddleware } from './infrastructure/security/jwt/JwtDecodeMiddleware';
+import { ApiModule } from './api/ApiModule';
 
 @Module({
     imports: [
@@ -12,15 +13,11 @@ import { JwtDecodeMiddleware } from './infrastructure/security/jwt/JwtDecodeMidd
                 };
             },
         }),
+        ApiModule,
     ],
 })
 export class ApplicationModule {
-    /**
-     * Configure the module
-     *
-     * @param consumer - The middleware consumer
-     */
     public configure(consumer: MiddlewareConsumer): void {
-        consumer.apply(JwtDecodeMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+        consumer.apply(JwtDecodeMiddleware).forRoutes({ path: '/api', method: RequestMethod.ALL });
     }
 }

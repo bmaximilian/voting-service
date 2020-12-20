@@ -4,10 +4,7 @@ import { decode } from 'jsonwebtoken';
 import Joi from 'joi';
 import { TokenInvalidError } from './TokenInvalidError';
 import { TokenNotFoundError } from './TokenNotFoundError';
-
-interface TokenPayload {
-    sub: string;
-}
+import { ApiRequest, TokenPayload } from './ApiRequest';
 
 @Injectable()
 export class JwtDecodeMiddleware implements NestMiddleware {
@@ -34,7 +31,7 @@ export class JwtDecodeMiddleware implements NestMiddleware {
         try {
             const decoded = this.decodeToken(req.headers.authorization.replace(/^Bearer /i, ''));
 
-            (req as any).authorizationToken = decoded;
+            (req as ApiRequest).authorizationToken = decoded;
         } catch (e) {
             this.logger.error(e, 'JwtDecodeMiddleware');
 

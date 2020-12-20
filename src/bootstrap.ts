@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import { ApplicationModule } from './app.module';
+import { ApplicationModule } from './ApplicationModule';
 
 export async function bootstrap(port: number | string): Promise<INestApplication> {
     const logger = new Logger();
