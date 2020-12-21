@@ -9,5 +9,16 @@
     "testRegex": ".e2e-spec.ts$",
     "transform": {
         "^.+\\.(t|j)s$": "ts-jest"
-    }
+    },
+    "collectCoverageFrom": [
+        "**/{!(main),}.(t)s"
+    ],
+    "coverageDirectory": "./coverage",
+    "globalSetup": "../jest.setup.global.ts",
+    "setupFiles": [
+        "jest-date-mock"
+    ],
+    "setupFilesAfterEnv": [
+        "jest-extended"
+    ]
 }

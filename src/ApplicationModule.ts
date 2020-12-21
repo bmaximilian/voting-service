@@ -3,6 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import typeOrmConfig from '../ormconfig';
 import { JwtDecodeMiddleware } from './infrastructure/security/jwt/JwtDecodeMiddleware';
 import { ApiModule } from './api/ApiModule';
+import { VotingDomainModule } from './domain/VotingDomainModule';
+import { InfrastructureModule } from './infrastructure/InfrastructureModule';
+
+const votingDomain = VotingDomainModule.forRoot([InfrastructureModule]);
 
 @Module({
     imports: [
@@ -13,7 +17,7 @@ import { ApiModule } from './api/ApiModule';
                 };
             },
         }),
-        ApiModule,
+        ApiModule.forRoot([votingDomain]),
     ],
 })
 export class ApplicationModule {

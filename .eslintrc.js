@@ -254,5 +254,11 @@ module.exports = {
                 'import/no-cycle': 'off',
             },
         },
+        {
+            files: ['*.e2e-spec.*'],
+            rules: {
+                'jest/expect-expect': 'off',
+            },
+        },
     ],
 };

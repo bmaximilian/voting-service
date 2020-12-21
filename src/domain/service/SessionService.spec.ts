@@ -26,7 +26,7 @@ describe('SessionService', () => {
         const participant = new Participant(1);
         const topic = new Topic(new Majority(MajorityType.relative), 10, ['yes', 'no']);
 
-        const session = await service.create(start, [participant], [topic]);
+        const session = await service.create('test-client', start, [participant], [topic]);
 
         expect(persistenceService.create).toHaveBeenCalledWith(session);
         expect(persistenceService.create).toHaveBeenCalledTimes(1);

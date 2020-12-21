@@ -54,8 +54,11 @@ jobs:
       - name: Static Code Analysis
         run: npm run lint
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: npm run test:cov
+
+      - name: Run Functional Tests
+        run: npm run test:e2e
 
       - name: Build
         run: npm run build
