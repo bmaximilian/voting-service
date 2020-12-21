@@ -22,6 +22,12 @@ const dotEnvExpand = require('dotenv-expand');
         }
     });
 
+console.log(
+    process.env.DB_SSL === undefined ? process.env.NODE_ENV === 'production' && !process.env.CI : !!process.env.DB_SSL,
+    process.env.DB_HOST,
+    process.env.DB_DATABASE,
+);
+
 function dropSchemaAndMigrate(): void {
     childProcess.execSync('npm run typeorm -- schema:drop');
     childProcess.execSync(`npm run typeorm -- query "CREATE SCHEMA IF NOT EXISTS ${process.env.DB_SCHEMA};"`);
