@@ -22,7 +22,7 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: voting
       DB_SCHEMA: public
-      DB_SSL: 0
+      DB_SSL:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SSL_REDIRECTION_ENABLED: 0
