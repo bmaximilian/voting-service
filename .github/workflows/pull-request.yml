@@ -9,42 +9,11 @@ on:
       - main
 
 jobs:
-  production_build:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-      NODE_ENV: production
-      PROFILE: production
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Use Node.js 12
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Cache node modules
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-production_build-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-production_build-npm-${{ hashFiles('package-lock.json') }}
-            ${{ runner.OS }}-production_build-npm-
-            ${{ runner.OS }}-production_build-
-            ${{ runner.OS }}-
-
-      - name: Install
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
   build:
     runs-on: ubuntu-latest
     env:
       CI: true
-      NODE_ENV: development
+      NODE_ENV: production
 
     services:
       postgres:
@@ -79,6 +48,8 @@ jobs:
             ${{ runner.OS }}-
       - name: Install Dependencies
         run: npm install
+        env:
+          NODE_ENV: development
 
       - name: Static Code Analysis
         run: npm run lint
