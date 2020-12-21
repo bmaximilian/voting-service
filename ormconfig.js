@@ -30,5 +30,8 @@ module.exports = {
     cli: {
         migrationsDir: join(rootDir, 'infrastructure/persistence/typeorm/migrations/*'),
     },
-    ssl: process.env.DB_SSL === undefined ? process.env.NODE_ENV === 'production' : !!process.env.DB_SSL,
+    ssl:
+        process.env.DB_SSL === undefined
+            ? process.env.NODE_ENV === 'production' && !process.env.CI
+            : !!process.env.DB_SSL,
 };
