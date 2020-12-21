@@ -20,6 +20,11 @@ function getRootDir() {
 
 const rootDir = getRootDir();
 
+console.log(
+    process.env.DB_SSL === undefined ? process.env.NODE_ENV === 'production' && !process.env.CI : !!process.env.DB_SSL,
+    getDatabaseUrl(),
+);
+
 module.exports = {
     type: 'postgres',
     url: getDatabaseUrl(),
