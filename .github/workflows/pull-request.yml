@@ -15,15 +15,6 @@ jobs:
       CI: true
       NODE_ENV: production
       PORT: 3000
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_DATABASE: voting
-      DB_SCHEMA: public
-      DB_SSL: 0
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
 
     services:
       postgres:
@@ -64,11 +55,11 @@ jobs:
       - name: Static Code Analysis
         run: npm run lint
 
+      - name: Build
+        run: npm run build
+
       - name: Run Unit Tests
         run: npm run test:cov
 
       - name: Run Functional Tests
         run: npm run test:e2e
-
-      - name: Build
-        run: npm run build
