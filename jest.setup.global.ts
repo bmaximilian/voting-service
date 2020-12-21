@@ -33,14 +33,5 @@ module.exports = (): void => {
     process.env.DB_SCHEMA = 'testing';
     process.env.TZ = 'Etc/UTC';
 
-    console.log(
-        process.env.DB_SSL === undefined ? process.env.NODE_ENV === 'production' : !!process.env.DB_SSL,
-        process.env.DB_HOST,
-        process.env.DB_DATABASE,
-        process.env.DB_SSL,
-        process.env.NODE_ENV,
-        !!process.env.DB_SSL,
-    );
-
     dropSchemaAndMigrate();
 };
