@@ -6,7 +6,7 @@ import { Majority, MajorityType } from './Majority';
 describe('Session', () => {
     let session: Session;
     beforeEach(() => {
-        session = new Session(new Date());
+        session = new Session('client', new Date());
     });
 
     it('should be able to construct', () => {
@@ -17,8 +17,9 @@ describe('Session', () => {
         const start = new Date('2020-12-24T00:00:00Z');
         const end = new Date('2020-12-24T23:59:59Z');
 
-        const newSession = new Session(start, end, '1', [], []);
+        const newSession = new Session('client-1', start, end, '1', [], []);
 
+        expect(newSession.getClientId()).toEqual('client-1');
         expect(newSession.getStart()).toEqual(start);
         expect(newSession.getEnd()).toEqual(end);
         expect(newSession.getId()).toEqual('1');
@@ -26,6 +27,10 @@ describe('Session', () => {
         expect(newSession.getParticipants()).toHaveLength(0);
         expect(newSession.getTopics()).toBeArray();
         expect(newSession.getTopics()).toHaveLength(0);
+    });
+
+    it('should have a client id', () => {
+        expect(session.getClientId()).toEqual('client');
     });
 
     it('should have a id', () => {

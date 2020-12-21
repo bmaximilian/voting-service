@@ -2,6 +2,8 @@ import { Participant } from './Participant';
 import { Topic } from './Topic';
 
 export class Session {
+    private readonly clientId: string;
+
     private id?: string;
 
     private start: Date;
@@ -12,12 +14,24 @@ export class Session {
 
     private topics: Topic[] = [];
 
-    public constructor(start: Date, end?: Date, id?: string, participants: Participant[] = [], topics: Topic[] = []) {
+    public constructor(
+        clientId: string,
+        start: Date,
+        end?: Date,
+        id?: string,
+        participants: Participant[] = [],
+        topics: Topic[] = [],
+    ) {
+        this.clientId = clientId;
         this.start = start;
         this.end = end;
         this.id = id;
         this.participants = participants;
         this.topics = topics;
+    }
+
+    public getClientId(): string {
+        return this.clientId;
     }
 
     public getId(): string | undefined {
