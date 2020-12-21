@@ -1,0 +1,90 @@
+name: Build and test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - development
+      - master
+      - main
+
+jobs:
+  production_build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_ENV: production
+      PROFILE: production
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-production_build-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-production_build-npm-${{ hashFiles('package-lock.json') }}
+            ${{ runner.OS }}-production_build-npm-
+            ${{ runner.OS }}-production_build-
+            ${{ runner.OS }}-
+
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_ENV: development
+
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: voting
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.15.1
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Static Code Analysis
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm run test:cov
+
+      - name: Build
+        run: npm run build
