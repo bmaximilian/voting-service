@@ -4,10 +4,16 @@ import { Mandate } from './Mandate';
 export class Ballot {
     private id?: string;
 
+    /**
+     * The participant the vote counts for
+     */
     private readonly participant: Participant;
 
     private readonly answerOption: string;
 
+    /**
+     * The participant that actually voted (of voted via mandate)
+     */
     private readonly mandate?: Mandate;
 
     public constructor(participant: Participant, answerOption: string, mandate?: Mandate, id?: string) {

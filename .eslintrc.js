@@ -249,7 +249,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['*.entity.*'],
+            files: ['**/persistence/**/entities/*'],
             rules: {
                 'import/no-cycle': 'off',
             },
