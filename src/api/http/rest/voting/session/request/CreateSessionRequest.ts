@@ -23,7 +23,6 @@ export class CreateSessionRequest {
         description: "The session's participants",
         type: [String],
         required: false,
-        isArray: true,
         example: [],
     })
     public participants?: CreateSessionParticipant[];
@@ -35,7 +34,6 @@ export class CreateSessionRequest {
         description: "The session's topics",
         type: [String],
         required: false,
-        isArray: true,
         example: [],
     })
     public topics?: CreateSessionTopic[];

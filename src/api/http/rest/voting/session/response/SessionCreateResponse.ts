@@ -27,7 +27,6 @@ export class SessionCreateResponse {
     @ApiModelProperty({
         description: 'The invited participants for the voting session',
         type: [SessionParticipantResponse],
-        isArray: true,
         required: true,
     })
     public participants: SessionParticipantResponse[];
@@ -35,7 +34,6 @@ export class SessionCreateResponse {
     @ApiModelProperty({
         description: 'The topics that need to be voted about in this voting session',
         type: [SessionTopicResponse],
-        isArray: true,
         required: true,
     })
     public topics: SessionTopicResponse[];

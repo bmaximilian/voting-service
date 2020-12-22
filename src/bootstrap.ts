@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { ApplicationModule } from './ApplicationModule';
 
 export async function bootstrap(port: number | string): Promise<INestApplication> {
@@ -14,6 +15,11 @@ export async function bootstrap(port: number | string): Promise<INestApplication
         preflightContinue: false,
         origin: '*',
     });
+
+    /* istanbul ignore next  */
+    if (process.env.NODE_ENV !== 'development') {
+        app.use(helmet());
+    }
 
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

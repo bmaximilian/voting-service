@@ -1,5 +1,11 @@
 import { Body, Controller, Post, Req } from '@nestjs/common';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiOperation,
+} from '@nestjs/swagger';
 import { SessionCreateResponse } from '../response/SessionCreateResponse';
 import { CreateSessionRequestResponseFactory } from '../factory/CreateSessionRequestResponseFactory';
 import { CreateSessionRequest } from '../request/CreateSessionRequest';
@@ -13,8 +19,14 @@ export class SessionController {
         private readonly sessionService: SessionService,
     ) {}
 
-    @ApiCreatedResponse({})
     @Post()
+    @ApiBearerAuth()
+    @ApiOperation({ description: 'Creates/schedules a new voting session' })
+    @ApiCreatedResponse({ description: 'Session successfully created', type: [SessionCreateResponse] })
+    @ApiForbiddenResponse({
+        description: 'Passed authorization token not valid. API token mus be passed as authorization header',
+    })
+    @ApiBadRequestResponse({ description: 'Invalid request body' })
     public async create(
         @Req() request: ApiRequest,
         @Body() createSessionRequest: CreateSessionRequest,
