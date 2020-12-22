@@ -21,7 +21,7 @@ const dotEnvExpand = require('dotenv-expand');
         }
     });
 
-module.exports = (): void => {
+export default (): void => {
     process.env.NODE_ENV = 'test';
     process.env.DB_SCHEMA = 'testing';
     process.env.TZ = 'Etc/UTC';

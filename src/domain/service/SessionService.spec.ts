@@ -23,10 +23,12 @@ describe('SessionService', () => {
         jest.spyOn(persistenceService, 'create').mockImplementation((sess) => Promise.resolve(sess));
 
         const start = new Date();
-        const participant = new Participant(1);
-        const topic = new Topic(new Majority(MajorityType.relative), 10, ['yes', 'no']);
+        const participant = new Participant('external-participant-1', 1);
+        const topic = new Topic('external-topic-1', new Majority(MajorityType.relative), 10, ['yes', 'no']);
 
-        const session = await service.create('test-client', start, [participant], [topic]);
+        const session = await service.create(
+            new Session('test-client', start, undefined, undefined, [participant], [topic]),
+        );
 
         expect(persistenceService.create).toHaveBeenCalledWith(session);
         expect(persistenceService.create).toHaveBeenCalledTimes(1);

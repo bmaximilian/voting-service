@@ -13,9 +13,9 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "migration:run:dev": "typeorm --config src/ormconfig.ts migration:run",
-    "migration:run": "typeorm --config dist/ormconfig.js migration:run",
-    "typeorm": "typeorm --config src/ormconfig.ts",
+    "migration:run:dev": "typeorm --config ormconfig.ts migration:run",
+    "migration:run": "typeorm --config ormconfig.js migration:run",
+    "typeorm": "typeorm --config ormconfig.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -107,7 +107,8 @@
       "jest-date-mock"
     ],
     "setupFilesAfterEnv": [
-      "jest-extended"
+      "jest-extended",
+      "../setupTests.ts"
     ]
   }
 }

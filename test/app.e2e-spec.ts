@@ -3,6 +3,6 @@ import request from 'supertest';
 
 declare const app: INestApplication;
 
-describe('HealthCheckController (e2e)', () => {
+describe('SessionController (e2e)', () => {
     it('/ (GET health check)', () => request(app.getHttpServer()).get('/').expect(200));
 });

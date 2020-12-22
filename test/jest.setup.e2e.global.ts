@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const childProcess = require('child_process');
-const setup = require('../jest.setup.global');
+const setup = require('../jest.setup.global').default;
 
 function dropSchemaAndMigrate(): void {
     childProcess.execSync('npm run typeorm -- schema:drop');
@@ -9,7 +9,7 @@ function dropSchemaAndMigrate(): void {
     childProcess.execSync('npm run migration:run:dev');
 }
 
-module.exports = (): void => {
+export default (): void => {
     setup();
     dropSchemaAndMigrate();
 };

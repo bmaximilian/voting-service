@@ -4,7 +4,7 @@ import { Mandate } from './Mandate';
 
 describe('Ballot', () => {
     let ballot: Ballot;
-    const participant = new Participant(3);
+    const participant = new Participant('4', 3);
     const answer = 'yes';
 
     beforeEach(() => {
@@ -16,7 +16,7 @@ describe('Ballot', () => {
     });
 
     it('should be able to construct with all arguments', () => {
-        const mandate = new Mandate(new Participant(10));
+        const mandate = new Mandate(new Participant('12', 10));
         const newBallot = new Ballot(participant, answer, mandate, '1');
 
         expect(newBallot.getParticipant()).toEqual(participant);
@@ -41,7 +41,7 @@ describe('Ballot', () => {
     });
 
     it('should have mandate', () => {
-        const mandate = new Mandate(new Participant(10));
+        const mandate = new Mandate(new Participant('abc', 0));
         const newBallot = new Ballot(participant, answer, mandate);
 
         expect(newBallot.getMandate()).toEqual(mandate);

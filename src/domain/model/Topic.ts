@@ -4,9 +4,13 @@ import { Majority } from './Majority';
 export class Topic {
     private id?: string;
 
+    private readonly externalId: string;
+
     private ballots: Ballot[] = [];
 
     private readonly answerOptions: string[];
+
+    private readonly abstentionAnswerOption?: string;
 
     private readonly majority: Majority;
 
@@ -15,16 +19,20 @@ export class Topic {
     private completed: boolean;
 
     public constructor(
+        externalId: string,
         majority: Majority,
         requiredNumberOfShares: number,
         answerOptions: string[],
+        abstentionAnswerOption?: string,
         completed = false,
         id?: string,
         ballots: Ballot[] = [],
     ) {
         this.id = id;
+        this.externalId = externalId;
         this.ballots = ballots;
         this.answerOptions = answerOptions;
+        this.abstentionAnswerOption = abstentionAnswerOption;
         this.majority = majority;
         this.requiredNumberOfShares = requiredNumberOfShares;
         this.completed = completed;
@@ -40,6 +48,10 @@ export class Topic {
         return this;
     }
 
+    public getExternalId(): string {
+        return this.externalId;
+    }
+
     public getBallots(): Ballot[] {
         return this.ballots;
     }
@@ -52,6 +64,10 @@ export class Topic {
 
     public getAnswerOptions(): string[] {
         return this.answerOptions;
+    }
+
+    public getAbstentionAnswerOption(): string | undefined {
+        return this.abstentionAnswerOption;
     }
 
     public getMajority(): Majority {

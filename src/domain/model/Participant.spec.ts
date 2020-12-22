@@ -4,7 +4,7 @@ import { Mandate } from './Mandate';
 describe('Participant', () => {
     let participant: Participant;
     beforeEach(() => {
-        participant = new Participant(1.5);
+        participant = new Participant('ext-1', 1.5);
     });
 
     it('should be able to construct', () => {
@@ -12,10 +12,11 @@ describe('Participant', () => {
     });
 
     it('should be able to construct with full arguments', () => {
-        const newParticipant = new Participant(2.4, '1', []);
+        const newParticipant = new Participant('ext-2', 2.4, '1', []);
 
         expect(newParticipant.getShares()).toEqual(2.4);
         expect(newParticipant.getId()).toEqual('1');
+        expect(newParticipant.getExternalId()).toEqual('ext-2');
         expect(newParticipant.getMandates()).toBeArray();
         expect(newParticipant.getMandates()).toHaveLength(0);
     });
@@ -27,11 +28,15 @@ describe('Participant', () => {
         expect(participant.getId()).toEqual('1');
     });
 
+    it('should have a external id', () => {
+        expect(participant.getExternalId()).toEqual('ext-1');
+    });
+
     it('should have mandates', () => {
         expect(participant.getMandates()).toBeArray();
         expect(participant.getMandates()).toHaveLength(0);
 
-        const mandate = new Mandate(new Participant(1));
+        const mandate = new Mandate(new Participant('ext-4', 1));
         participant.setMandates([mandate]);
 
         expect(participant.getMandates()).toBeArray();

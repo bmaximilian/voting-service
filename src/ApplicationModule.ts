@@ -7,7 +7,7 @@ import { VotingDomainModule } from './domain/VotingDomainModule';
 import { InfrastructureModule } from './infrastructure/InfrastructureModule'; // eslint-disable-line import/order
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const ormConfig = require('./ormconfig');
+const ormConfig = require('../ormconfig');
 
 const votingDomain = VotingDomainModule.forRoot([InfrastructureModule]);
 
