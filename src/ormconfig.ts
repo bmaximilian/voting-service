@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { join } = require('path');
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const { join } = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type,consistent-return
 function getDatabaseUrl() {
@@ -9,26 +10,19 @@ function getDatabaseUrl() {
         // eslint-disable-next-line max-len
         return `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_DATABASE}`;
     }
+
+    return undefined;
 }
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function getRootDir() {
-    if (process.env.NODE_ENV === 'production') return join(__dirname, 'dist');
-
-    return join(__dirname, 'src');
-}
-
-const rootDir = getRootDir();
 
 module.exports = {
     type: 'postgres',
     url: getDatabaseUrl(),
     schema: process.env.DB_SCHEMA || 'public',
-    entities: [join(rootDir, 'infrastructure/persistence/typeorm/entities/*')],
-    migrations: [join(rootDir, 'infrastructure/persistence/typeorm/migrations/*')],
+    entities: [join(__dirname, 'infrastructure/persistence/typeorm/entities/*')],
+    migrations: [join(__dirname, 'infrastructure/persistence/typeorm/migrations/*')],
     synchronize: false, // Database changes should only happen via migration scripts.
     cli: {
-        migrationsDir: join(rootDir, 'infrastructure/persistence/typeorm/migrations/*'),
+        migrationsDir: join(__dirname, 'infrastructure/persistence/typeorm/migrations/*'),
     },
     ssl: process.env.DB_SSL === undefined ? process.env.NODE_ENV === 'production' : !!process.env.DB_SSL,
 };

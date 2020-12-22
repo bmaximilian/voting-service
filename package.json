@@ -13,9 +13,9 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "migration:run:dev": "ts-node -r dotenv/config -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
-    "migration:run": "node -r dotenv/config ./node_modules/typeorm/cli.js migration:run",
-    "typeorm": "ts-node -r dotenv/config -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:run:dev": "typeorm --config src/ormconfig.ts migration:run",
+    "migration:run": "typeorm --config dist/ormconfig.js migration:run",
+    "typeorm": "typeorm --config src/ormconfig.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -90,7 +90,7 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/{!(main),}.(t)s"
+      "**/{!(main|ormconfig),}.(t)s"
     ],
     "coverageDirectory": "../coverage",
     "coverageThreshold": {
