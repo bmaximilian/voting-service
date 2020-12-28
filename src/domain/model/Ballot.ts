@@ -14,7 +14,7 @@ export class Ballot {
     /**
      * The participant that actually voted (of voted via mandate)
      */
-    private readonly mandate?: Mandate;
+    private mandate?: Mandate;
 
     public constructor(participant: Participant, answerOption: string, mandate?: Mandate, id?: string) {
         this.id = id;
@@ -43,5 +43,11 @@ export class Ballot {
 
     public getMandate(): Mandate {
         return this.mandate;
+    }
+
+    public setMandate(mandate: Mandate): this {
+        this.mandate = mandate;
+
+        return this;
     }
 }

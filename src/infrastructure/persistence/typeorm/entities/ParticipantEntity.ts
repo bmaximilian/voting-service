@@ -12,7 +12,7 @@ export class ParticipantEntity extends BaseEntity {
     public shares: number;
 
     @OneToMany(() => MandateEntity, (mandate) => mandate.mandatedBy, { eager: true, cascade: true })
-    public mandates: MandateEntity[];
+    public mandates?: MandateEntity[];
 
     @ManyToOne(() => SessionEntity, (session) => session.participants)
     @JoinColumn({ name: 'voting_session_id' })

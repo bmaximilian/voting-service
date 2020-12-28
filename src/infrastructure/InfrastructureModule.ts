@@ -7,6 +7,10 @@ import { TopicRepository } from './persistence/typeorm/repositories/TopicReposit
 import { ParticipantRepository } from './persistence/typeorm/repositories/ParticipantRepository';
 import { BallotRepository } from './persistence/typeorm/repositories/BallotRepository';
 import { MandateRepository } from './persistence/typeorm/repositories/MandateRepository';
+import { SessionEntityFactory } from './persistence/typeorm/factories/SessionEntityFactory';
+import { TopicEntityFactory } from './persistence/typeorm/factories/TopicEntityFactory';
+import { ParticipantEntityFactory } from './persistence/typeorm/factories/ParticipantEntityFactory';
+import { BallotEntityFactory } from './persistence/typeorm/factories/BallotEntityFactory';
 
 @Module({
     imports: [
@@ -18,7 +22,13 @@ import { MandateRepository } from './persistence/typeorm/repositories/MandateRep
             MandateRepository,
         ]),
     ],
-    providers: [{ provide: AbstractSessionPersistenceService, useClass: SessionPersistenceService }],
+    providers: [
+        { provide: AbstractSessionPersistenceService, useClass: SessionPersistenceService },
+        SessionEntityFactory,
+        TopicEntityFactory,
+        ParticipantEntityFactory,
+        BallotEntityFactory,
+    ],
     exports: [AbstractSessionPersistenceService],
 })
 export class InfrastructureModule {}

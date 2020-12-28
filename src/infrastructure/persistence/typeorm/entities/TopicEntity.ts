@@ -33,4 +33,14 @@ export class TopicEntity extends BaseEntity {
     @ManyToOne(() => SessionEntity, (session) => session.topics)
     @JoinColumn({ name: 'voting_session_id' })
     public session: SessionEntity;
+
+    public getAnswerOptions(): string[] {
+        return JSON.parse(this.answerOptions);
+    }
+
+    public setAnswerOptions(answerOptions: string[]): this {
+        this.answerOptions = JSON.stringify(answerOptions);
+
+        return this;
+    }
 }

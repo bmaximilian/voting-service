@@ -13,7 +13,7 @@ export class BallotEntity extends BaseEntity {
     @Column({ name: 'answer_option' })
     public answerOption: string;
 
-    @OneToOne(() => MandateEntity, { eager: true, cascade: true })
+    @OneToOne(() => MandateEntity, { eager: true })
     @JoinColumn({ name: 'mandate_id' })
     public mandate?: MandateEntity;
 

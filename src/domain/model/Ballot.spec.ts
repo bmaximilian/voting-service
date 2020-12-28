@@ -45,5 +45,10 @@ describe('Ballot', () => {
         const newBallot = new Ballot(participant, answer, mandate);
 
         expect(newBallot.getMandate()).toEqual(mandate);
+
+        const mandate2 = new Mandate(new Participant('abc2', 10));
+        newBallot.setMandate(mandate2);
+
+        expect(newBallot.getMandate()).toEqual(mandate2);
     });
 });
