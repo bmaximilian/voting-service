@@ -16,8 +16,6 @@ function getDatabaseUrl() {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function getRootDir() {
-    if (process.env.NODE_ENV === 'production') return join(__dirname, 'dist');
-
     return join(__dirname, 'src');
 }
 

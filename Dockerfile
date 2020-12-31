@@ -42,5 +42,5 @@ WORKDIR /opt/app
 # start the node application
 CMD [ "sh", "start.sh" ]
 
-COPY --from=builder /opt/app/dist /opt/app/package.json /opt/app/package-lock.json /opt/app/wait-for-it.sh /opt/app/
+COPY --from=builder /opt/app/dist/src /opt/app/dist/ormconfig.js /opt/app/package.json /opt/app/package-lock.json /opt/app/wait-for-it.sh /opt/app/
 RUN npm install && npm cache clean --force
