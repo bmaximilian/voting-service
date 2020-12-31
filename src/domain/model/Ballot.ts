@@ -4,11 +4,17 @@ import { Mandate } from './Mandate';
 export class Ballot {
     private id?: string;
 
+    /**
+     * The participant the vote counts for
+     */
     private readonly participant: Participant;
 
     private readonly answerOption: string;
 
-    private readonly mandate?: Mandate;
+    /**
+     * The participant that actually voted (of voted via mandate)
+     */
+    private mandate?: Mandate;
 
     public constructor(participant: Participant, answerOption: string, mandate?: Mandate, id?: string) {
         this.id = id;
@@ -37,5 +43,11 @@ export class Ballot {
 
     public getMandate(): Mandate {
         return this.mandate;
+    }
+
+    public setMandate(mandate: Mandate): this {
+        this.mandate = mandate;
+
+        return this;
     }
 }

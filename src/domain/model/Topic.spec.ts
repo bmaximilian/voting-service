@@ -8,7 +8,7 @@ describe('Topic', () => {
     const majority = new Majority(MajorityType.relative);
 
     beforeEach(() => {
-        topic = new Topic(majority, 20, []);
+        topic = new Topic('ext-1', majority, 20, []);
     });
 
     it('should be able to construct', () => {
@@ -16,13 +16,15 @@ describe('Topic', () => {
     });
 
     it('should be able to construct with all arguments', () => {
-        const newTopic = new Topic(majority, 20, [], true, '1', []);
+        const newTopic = new Topic('ext-2', majority, 20, [], 'abs', true, '1', []);
 
         expect(newTopic.getMajority()).toEqual(majority);
         expect(newTopic.getRequiredNumberOfShares()).toEqual(20);
         expect(newTopic.getAnswerOptions()).toEqual([]);
+        expect(newTopic.getAbstentionAnswerOption()).toEqual('abs');
         expect(newTopic.isCompleted()).toBeTrue();
         expect(newTopic.getId()).toEqual('1');
+        expect(newTopic.getExternalId()).toEqual('ext-2');
         expect(newTopic.getBallots()).toEqual([]);
     });
 
@@ -33,11 +35,15 @@ describe('Topic', () => {
         expect(topic.getId()).toEqual('1');
     });
 
+    it('should have a external id', () => {
+        expect(topic.getExternalId()).toEqual('ext-1');
+    });
+
     it('should have a ballots', () => {
         expect(topic.getBallots()).toBeArray();
         expect(topic.getBallots()).toHaveLength(0);
 
-        const ballot = new Ballot(new Participant(1), 'yes');
+        const ballot = new Ballot(new Participant('foo', 1), 'yes');
         topic.setBallots([ballot]);
 
         expect(topic.getBallots()).toBeArray();
@@ -48,6 +54,10 @@ describe('Topic', () => {
     it('should have answer options', () => {
         expect(topic.getAnswerOptions()).toBeArray();
         expect(topic.getAnswerOptions()).toHaveLength(0);
+    });
+
+    it('should have abstention answer option', () => {
+        expect(topic.getAbstentionAnswerOption()).toBeUndefined();
     });
 
     it('should have a majority', () => {

@@ -3,7 +3,7 @@ import { Participant } from './Participant';
 
 describe('Mandate', () => {
     let mandate: Mandate;
-    const participant = new Participant(1);
+    const participant = new Participant('3', 1);
 
     beforeEach(() => {
         mandate = new Mandate(participant);
@@ -30,7 +30,7 @@ describe('Mandate', () => {
     it('should have a participant', () => {
         expect(mandate.getParticipant()).toEqual(participant);
 
-        const newParticipant = new Participant(1);
+        const newParticipant = new Participant('1', 1);
         mandate.setParticipant(newParticipant);
 
         expect(mandate.getParticipant()).toEqual(newParticipant);

@@ -14,11 +14,12 @@
         "**/{!(main),}.(t)s"
     ],
     "coverageDirectory": "./coverage",
-    "globalSetup": "../jest.setup.global.ts",
+    "globalSetup": "./jest.setup.e2e.global.ts",
     "setupFiles": [
         "jest-date-mock"
     ],
     "setupFilesAfterEnv": [
-        "jest-extended"
+        "jest-extended",
+        "./jest.setup.e2e.after-env.ts"
     ]
 }

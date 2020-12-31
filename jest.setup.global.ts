@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const childProcess = require('child_process');
 const { join } = require('path');
 const { existsSync } = require('fs');
 const dotenv = require('dotenv');
@@ -22,16 +21,8 @@ const dotEnvExpand = require('dotenv-expand');
         }
     });
 
-function dropSchemaAndMigrate(): void {
-    childProcess.execSync('npm run typeorm -- schema:drop');
-    childProcess.execSync(`npm run typeorm -- query "CREATE SCHEMA IF NOT EXISTS ${process.env.DB_SCHEMA};"`);
-    childProcess.execSync('npm run migration:run:dev');
-}
-
-module.exports = (): void => {
+export default (): void => {
     process.env.NODE_ENV = 'test';
     process.env.DB_SCHEMA = 'testing';
     process.env.TZ = 'Etc/UTC';
-
-    dropSchemaAndMigrate();
 };

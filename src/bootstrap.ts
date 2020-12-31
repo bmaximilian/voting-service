@@ -15,7 +15,11 @@ export async function bootstrap(port: number | string): Promise<INestApplication
         preflightContinue: false,
         origin: '*',
     });
-    app.use(helmet());
+
+    /* istanbul ignore next  */
+    if (process.env.NODE_ENV !== 'development') {
+        app.use(helmet());
+    }
 
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

@@ -58,7 +58,7 @@ describe('Session', () => {
         expect(session.getParticipants()).toBeArray();
         expect(session.getParticipants()).toHaveLength(0);
 
-        const participant = new Participant(1);
+        const participant = new Participant('abc', 1);
         session.setParticipants([participant]);
 
         expect(session.getParticipants()).toBeArray();
@@ -70,7 +70,7 @@ describe('Session', () => {
         expect(session.getTopics()).toBeArray();
         expect(session.getTopics()).toHaveLength(0);
 
-        const topic = new Topic(new Majority(MajorityType.single), 10, []);
+        const topic = new Topic('ext-2', new Majority(MajorityType.single), 10, []);
         session.setTopics([topic]);
 
         expect(session.getTopics()).toBeArray();

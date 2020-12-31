@@ -3,14 +3,17 @@ import { Mandate } from './Mandate'; // eslint-disable-line import/no-cycle
 export class Participant {
     private id?: string;
 
+    private readonly externalId: string;
+
     private mandates: Mandate[] = [];
 
     private shares: number;
 
-    public constructor(shares: number, id?: string, mandates: Mandate[] = []) {
+    public constructor(externalId: string, shares: number, id?: string, mandates: Mandate[] = []) {
         this.id = id;
         this.mandates = mandates;
         this.shares = shares;
+        this.externalId = externalId;
     }
 
     public getId(): string | undefined {
@@ -21,6 +24,10 @@ export class Participant {
         this.id = id;
 
         return this;
+    }
+
+    public getExternalId(): string {
+        return this.externalId;
     }
 
     public getMandates(): Mandate[] {
