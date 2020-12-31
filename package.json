@@ -104,7 +104,7 @@
       }
     },
     "testEnvironment": "node",
-    "globalSetup": "../jest.setup.global.ts",
+    "globalSetup": "../test/jest.setup.e2e.global.ts",
     "setupFiles": [
       "jest-date-mock"
     ],

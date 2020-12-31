@@ -11,7 +11,7 @@ export class ParticipantEntity extends BaseEntity {
     @Column()
     public shares: number;
 
-    @OneToMany(() => MandateEntity, (mandate) => mandate.mandatedBy, { eager: true, cascade: true })
+    @OneToMany(() => MandateEntity, (mandate) => mandate.mandatedBy, { eager: false, cascade: true })
     public mandates?: MandateEntity[];
 
     @ManyToOne(() => SessionEntity, (session) => session.participants)

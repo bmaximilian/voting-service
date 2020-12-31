@@ -32,7 +32,7 @@ export class Topic {
         this.externalId = externalId;
         this.ballots = ballots;
         this.answerOptions = answerOptions;
-        this.abstentionAnswerOption = abstentionAnswerOption;
+        this.abstentionAnswerOption = abstentionAnswerOption || undefined;
         this.majority = majority;
         this.requiredNumberOfShares = requiredNumberOfShares;
         this.completed = completed;

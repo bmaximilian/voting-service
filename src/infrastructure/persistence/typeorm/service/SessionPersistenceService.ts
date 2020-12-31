@@ -2,10 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { AbstractSessionPersistenceService, Session } from '../../../../domain';
 import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionEntityFactory } from '../factories/SessionEntityFactory';
+import { ParticipantPersistenceService } from './ParticipantPersistenceService';
 
 @Injectable()
 export class SessionPersistenceService extends AbstractSessionPersistenceService {
-    public constructor(private sessionRepository: SessionRepository, private sessionFactory: SessionEntityFactory) {
+    public constructor(
+        private sessionRepository: SessionRepository,
+        private sessionFactory: SessionEntityFactory,
+        private participantPersistenceService: ParticipantPersistenceService,
+    ) {
         super();
     }
 
@@ -14,10 +19,14 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
 
         const savedSession = await this.sessionRepository.save(sessionEntity);
 
-        // TODO: save mandates for participants
-        // const participants = await this.participantsService.saveMandates(session.getParticipants())
-        // this.sessionFactory.fromEntity(savedSession).setParticipants(participants);
+        await this.participantPersistenceService.saveMandates(session.getParticipants(), savedSession.participants);
 
-        return this.sessionFactory.fromEntity(savedSession);
+        return this.findById(savedSession.id);
+    }
+
+    public async findById(id: string): Promise<Session> {
+        const session = await this.sessionRepository.findOne(id);
+
+        return this.sessionFactory.fromEntity(session);
     }
 }

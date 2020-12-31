@@ -17,6 +17,6 @@ export class SessionEntity extends BaseEntity {
     @OneToMany(() => ParticipantEntity, (participant) => participant.session, { eager: true, cascade: true })
     public participants: ParticipantEntity[];
 
-    @OneToMany(() => ParticipantEntity, (participant) => participant.session, { eager: true, cascade: true })
+    @OneToMany(() => TopicEntity, (topic) => topic.session, { eager: true, cascade: true })
     public topics: TopicEntity[];
 }

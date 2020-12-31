@@ -8,7 +8,7 @@ export class MandateEntity extends BaseEntity {
     @JoinColumn({ name: 'mandated_participant_id' })
     public participant: ParticipantEntity;
 
-    @ManyToOne(() => ParticipantEntity, (participant) => participant.mandates)
+    @ManyToOne(() => ParticipantEntity, (participant) => participant.mandates, { eager: true })
     @JoinColumn({ name: 'mandated_by_participant_id' })
     public mandatedBy: ParticipantEntity;
 }

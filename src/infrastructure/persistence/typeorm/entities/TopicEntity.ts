@@ -35,7 +35,11 @@ export class TopicEntity extends BaseEntity {
     public session: SessionEntity;
 
     public getAnswerOptions(): string[] {
-        return JSON.parse(this.answerOptions);
+        try {
+            return JSON.parse(this.answerOptions);
+        } catch (e) {
+            return this.answerOptions as any;
+        }
     }
 
     public setAnswerOptions(answerOptions: string[]): this {

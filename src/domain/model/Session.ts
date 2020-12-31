@@ -24,8 +24,8 @@ export class Session {
     ) {
         this.clientId = clientId;
         this.start = start;
-        this.end = end;
-        this.id = id;
+        this.end = end || undefined;
+        this.id = id || undefined;
         this.participants = participants;
         this.topics = topics;
     }
