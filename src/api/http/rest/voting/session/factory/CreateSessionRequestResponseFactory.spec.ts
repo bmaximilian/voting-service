@@ -55,17 +55,17 @@ describe('CreateSessionRequestResponseFactory', () => {
             expect(session.getStart()).toEqual(request.start);
             expect(session.getId()).toBeUndefined();
 
-            expect(session.getParticipants()[0].getExternalId()).toEqual('external-participant-id');
+            expect(session.getParticipants()[0].getExternalId()).toEqual('the-client__external-participant-id');
             expect(session.getParticipants()[0].getShares()).toEqual(50);
             expect(session.getParticipants()[0].getId()).toBeUndefined();
             expect(session.getParticipants()[0].getMandates()).toBeArrayOfSize(0);
 
-            expect(session.getParticipants()[1].getExternalId()).toEqual('external-participant2-id');
+            expect(session.getParticipants()[1].getExternalId()).toEqual('the-client__external-participant2-id');
             expect(session.getParticipants()[1].getShares()).toEqual(49);
             expect(session.getParticipants()[1].getId()).toBeUndefined();
             expect(session.getParticipants()[1].getMandates()).toBeArrayOfSize(0);
 
-            expect(session.getTopics()[0].getExternalId()).toEqual(topic.id);
+            expect(session.getTopics()[0].getExternalId()).toEqual(`the-client__${topic.id}`);
             expect(session.getTopics()[0].getAbstentionAnswerOption()).toEqual(topic.abstentionAnswerOption);
             expect(session.getTopics()[0].getAnswerOptions()).toEqual(topic.answerOptions);
             expect(session.getTopics()[0].getRequiredNumberOfShares()).toEqual(topic.requiredNumberOfShares);
@@ -97,35 +97,35 @@ describe('CreateSessionRequestResponseFactory', () => {
 
             const session = factory.createSession(request, 'the-client');
 
-            expect(session.getParticipants()[0].getExternalId()).toEqual('external-participant-id-1');
+            expect(session.getParticipants()[0].getExternalId()).toEqual('the-client__external-participant-id-1');
             expect(session.getParticipants()[0].getShares()).toEqual(10);
             expect(session.getParticipants()[0].getMandates()).toBeArrayOfSize(0);
 
-            expect(session.getParticipants()[1].getExternalId()).toEqual('external-participant-id-2');
+            expect(session.getParticipants()[1].getExternalId()).toEqual('the-client__external-participant-id-2');
             expect(session.getParticipants()[1].getShares()).toEqual(15);
             expect(session.getParticipants()[1].getMandates()).toBeArrayOfSize(1);
             expect(session.getParticipants()[1].getMandates()[0].getId()).toBeUndefined();
             expect(session.getParticipants()[1].getMandates()[0].getParticipant().getExternalId()).toEqual(
-                'external-participant-id-1',
+                'the-client__external-participant-id-1',
             );
 
-            expect(session.getParticipants()[2].getExternalId()).toEqual('external-participant-id-3');
+            expect(session.getParticipants()[2].getExternalId()).toEqual('the-client__external-participant-id-3');
             expect(session.getParticipants()[2].getShares()).toEqual(33);
             expect(session.getParticipants()[2].getMandates()).toBeArrayOfSize(2);
             expect(session.getParticipants()[2].getMandates()[0].getId()).toBeUndefined();
             expect(session.getParticipants()[2].getMandates()[0].getParticipant().getExternalId()).toEqual(
-                'external-participant-id-1',
+                'the-client__external-participant-id-1',
             );
             expect(session.getParticipants()[2].getMandates()[1].getId()).toBeUndefined();
             expect(session.getParticipants()[2].getMandates()[1].getParticipant().getExternalId()).toEqual(
-                'external-participant-id-2',
+                'the-client__external-participant-id-2',
             );
         });
     });
 
     describe('createResponse', () => {
         it('should create a response from the session', () => {
-            const participant1 = new Participant('external-participant-id', 20, 'internal-participant-id');
+            const participant1 = new Participant('clientId__external-participant-id', 20, 'internal-participant-id');
             const session = new Session(
                 'clientId',
                 new Date(),
@@ -133,13 +133,13 @@ describe('CreateSessionRequestResponseFactory', () => {
                 'internal-session-id',
                 [
                     participant1,
-                    new Participant('external-participant-id-2', 10, 'internal-participant-id-2', [
+                    new Participant('clientId__external-participant-id-2', 10, 'internal-participant-id-2', [
                         new Mandate(participant1, 'internal-mandate-id'),
                     ]),
                 ],
                 [
                     new Topic(
-                        'external-topic-id',
+                        'clientId__external-topic-id',
                         new Majority(MajorityType.single),
                         50,
                         ['yes', 'no'],
@@ -160,7 +160,7 @@ describe('CreateSessionRequestResponseFactory', () => {
             expect(response.topics).toBeArrayOfSize(1);
 
             expect(response.participants[0]).toEqual({
-                id: participant1.getExternalId(),
+                id: 'external-participant-id',
             });
             expect(response.participants[1]).toEqual({
                 id: 'external-participant-id-2',
