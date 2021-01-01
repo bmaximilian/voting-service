@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex, TableUnique } from 'typeorm';
 
 export class CreateTableParticipant20201222202401 implements MigrationInterface {
     private schema = process.env.DB_SCHEMA;
@@ -28,7 +28,6 @@ export class CreateTableParticipant20201222202401 implements MigrationInterface 
                     {
                         name: 'external_id',
                         type: 'varchar',
-                        isUnique: true,
                     },
                     {
                         name: 'shares',
@@ -49,6 +48,20 @@ export class CreateTableParticipant20201222202401 implements MigrationInterface 
                 columnNames: ['voting_session_id'],
                 referencedColumnNames: ['id'],
                 referencedTableName: `${this.schema}.voting_session`,
+            }),
+        );
+
+        await queryRunner.createUniqueConstraint(
+            `${this.schema}.participant`,
+            new TableUnique({
+                columnNames: ['external_id', 'voting_session_id'],
+            }),
+        );
+
+        await queryRunner.createIndex(
+            `${this.schema}.participant`,
+            new TableIndex({
+                columnNames: ['external_id'],
             }),
         );
     }
