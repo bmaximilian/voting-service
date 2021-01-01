@@ -5,10 +5,20 @@ import { ApiExceptionFilter } from './http/rest/ApiExceptionFilter';
 import { HealthCheckController } from './http/rest/healthcheck/controller/HealthCheckController';
 import { SessionController } from './http/rest/voting/session/controller/SessionController';
 import { CreateSessionRequestResponseFactory } from './http/rest/voting/session/factory/CreateSessionRequestResponseFactory';
+import { CreateTopicRequestResponseFactory } from './http/rest/voting/session/factory/CreateTopicRequestResponseFactory';
+import { CreateParticipantRequestResponseFactory } from './http/rest/voting/session/factory/CreateParticipantRequestResponseFactory';
+import { ExternalIdComposer } from './http/rest/voting/session/factory/ExternalIdComposer';
+import { TopicController } from './http/rest/voting/session/controller/TopicController';
 
 @Module({
-    controllers: [HealthCheckController, SessionController],
-    providers: [{ provide: APP_FILTER, useClass: ApiExceptionFilter }, CreateSessionRequestResponseFactory],
+    controllers: [HealthCheckController, SessionController, TopicController],
+    providers: [
+        { provide: APP_FILTER, useClass: ApiExceptionFilter },
+        CreateSessionRequestResponseFactory,
+        CreateTopicRequestResponseFactory,
+        CreateParticipantRequestResponseFactory,
+        ExternalIdComposer,
+    ],
 })
 export class ApiModule {
     public static forRoot(imports: ImportModule[]): DynamicModule {

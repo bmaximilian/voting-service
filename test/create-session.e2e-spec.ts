@@ -81,11 +81,11 @@ describe('POST /api/v1/sessions', () => {
         expect(response.body.participants).toBeArrayOfSize(3);
         expect(response.body.topics).toBeArrayOfSize(2);
 
-        expect(response.body.participants).toContainEqual({ id: 'par_1' });
-        expect(response.body.participants).toContainEqual({ id: 'par_2' });
-        expect(response.body.participants).toContainEqual({ id: 'par_3' });
+        expect(response.body.participants[0].id).toEqual('par_1');
+        expect(response.body.participants[1].id).toEqual('par_2');
+        expect(response.body.participants[2].id).toEqual('par_3');
 
-        expect(response.body.topics).toContainEqual({ id: 'top_1' });
-        expect(response.body.topics).toContainEqual({ id: 'top_2' });
+        expect(response.body.topics[0].id).toEqual('top_1');
+        expect(response.body.topics[1].id).toEqual('top_2');
     });
 });
