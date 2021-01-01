@@ -70,4 +70,29 @@ describe('SessionService', () => {
         expect(savedTopic.getAnswerOptions()).toEqual(topic.getAnswerOptions());
         expect(savedTopic.getAbstentionAnswerOption()).toEqual(topic.getAbstentionAnswerOption());
     });
+
+    it('should add a participant to a session', async () => {
+        const session = new Session('clientId', new Date());
+
+        jest.spyOn(session, 'addParticipant');
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+        jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
+
+        const participant = new Participant('external-participant-1', 1);
+
+        const savedParticipant = await service.addParticipant('sessionId', participant);
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('sessionId');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
+
+        expect(session.addParticipant).toHaveBeenCalledWith(participant);
+        expect(session.addParticipant).toHaveBeenCalledTimes(1);
+
+        expect(persistenceService.save).toHaveBeenCalledWith(session);
+        expect(persistenceService.save).toHaveBeenCalledTimes(1);
+
+        expect(savedParticipant).toBeInstanceOf(Participant);
+        expect(savedParticipant.getExternalId()).toEqual(participant.getExternalId());
+        expect(savedParticipant.getShares()).toEqual(participant.getShares());
+    });
 });
