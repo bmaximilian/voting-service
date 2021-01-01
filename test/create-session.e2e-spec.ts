@@ -81,11 +81,15 @@ describe('POST /api/v1/sessions', () => {
         expect(response.body.participants).toBeArrayOfSize(3);
         expect(response.body.topics).toBeArrayOfSize(2);
 
-        expect(response.body.participants).toContainEqual({ id: 'par_1' });
-        expect(response.body.participants).toContainEqual({ id: 'par_2' });
-        expect(response.body.participants).toContainEqual({ id: 'par_3' });
+        function findItemWithId<T extends { id: string }>(collection: T[], id: string): T {
+            return collection.find((item) => item.id === id);
+        }
 
-        expect(response.body.topics).toContainEqual({ id: 'top_1' });
-        expect(response.body.topics).toContainEqual({ id: 'top_2' });
+        expect(findItemWithId(response.body.participants, 'par_1')).toBeDefined();
+        expect(findItemWithId(response.body.participants, 'par_2')).toBeDefined();
+        expect(findItemWithId(response.body.participants, 'par_3')).toBeDefined();
+
+        expect(findItemWithId(response.body.topics, 'top_1')).toBeDefined();
+        expect(findItemWithId(response.body.topics, 'top_2')).toBeDefined();
     });
 });

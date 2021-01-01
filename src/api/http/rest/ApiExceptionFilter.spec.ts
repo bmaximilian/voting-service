@@ -2,6 +2,7 @@ import { ArgumentsHost, HttpServer, Logger } from '@nestjs/common';
 import { createMock } from '@golevelup/nestjs-testing';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
+import { SessionNotFoundException } from '../../../domain';
 import { ApiExceptionFilter } from './ApiExceptionFilter';
 
 describe('ApiExceptionFilter', () => {
@@ -50,6 +51,16 @@ describe('ApiExceptionFilter', () => {
             argumentsHost.getArgByIndex(1),
             { error: 'Unauthorized', message: 'Token not found', statusCode: 401 },
             401,
+        );
+    });
+
+    it('should transform a SessionNotFoundException into a NotFoundException', () => {
+        filter.catch(new SessionNotFoundException('sessionId'), argumentsHost);
+
+        expect(server.reply).toHaveBeenCalledWith(
+            argumentsHost.getArgByIndex(1),
+            { error: 'Not Found', message: 'Session with the id sessionId not found', statusCode: 404 },
+            404,
         );
     });
 });

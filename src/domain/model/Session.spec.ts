@@ -66,6 +66,23 @@ describe('Session', () => {
         expect(session.getParticipants()).toContain(participant);
     });
 
+    it('should be able to add a participant', () => {
+        expect(session.getParticipants()).toBeArray();
+        expect(session.getParticipants()).toHaveLength(0);
+
+        const participant = new Participant('abc', 1);
+        session.setParticipants([participant]);
+
+        expect(session.getParticipants()).toHaveLength(1);
+
+        const participant2 = new Participant('def', 1);
+        session.addParticipant(participant2);
+
+        expect(session.getParticipants()).toHaveLength(2);
+        expect(session.getParticipants()).toContain(participant);
+        expect(session.getParticipants()).toContain(participant2);
+    });
+
     it('should have topics', () => {
         expect(session.getTopics()).toBeArray();
         expect(session.getTopics()).toHaveLength(0);
@@ -76,5 +93,22 @@ describe('Session', () => {
         expect(session.getTopics()).toBeArray();
         expect(session.getTopics()).toHaveLength(1);
         expect(session.getTopics()).toContain(topic);
+    });
+
+    it('should be able to add a topic', () => {
+        expect(session.getTopics()).toBeArray();
+        expect(session.getTopics()).toHaveLength(0);
+
+        const topic = new Topic('ext-2', new Majority(MajorityType.single), 10, []);
+        session.setTopics([topic]);
+
+        expect(session.getTopics()).toHaveLength(1);
+
+        const topic2 = new Topic('ext-3', new Majority(MajorityType.single), 10, []);
+        session.addTopic(topic2);
+
+        expect(session.getTopics()).toHaveLength(2);
+        expect(session.getTopics()).toContain(topic);
+        expect(session.getTopics()).toContain(topic2);
     });
 });

@@ -3,12 +3,19 @@ import { CreateSessionTopic } from '../request/CreateSessionTopic';
 import { Majority, MajorityType, Mandate, Participant, Session, Topic } from '../../../../../../domain';
 import { CreateSessionParticipant } from '../request/CreateSessionParticipant';
 import { CreateSessionRequestResponseFactory } from './CreateSessionRequestResponseFactory';
+import { CreateParticipantRequestResponseFactory } from './CreateParticipantRequestResponseFactory';
+import { CreateTopicRequestResponseFactory } from './CreateTopicRequestResponseFactory';
+import { ExternalIdComposer } from './ExternalIdComposer';
 
 describe('CreateSessionRequestResponseFactory', () => {
     let factory: CreateSessionRequestResponseFactory;
 
     beforeEach(() => {
-        factory = new CreateSessionRequestResponseFactory();
+        const externalIdComposer = new ExternalIdComposer();
+        factory = new CreateSessionRequestResponseFactory(
+            new CreateParticipantRequestResponseFactory(externalIdComposer),
+            new CreateTopicRequestResponseFactory(externalIdComposer),
+        );
     });
 
     describe('createSession', () => {
@@ -159,16 +166,10 @@ describe('CreateSessionRequestResponseFactory', () => {
             expect(response.participants).toBeArrayOfSize(2);
             expect(response.topics).toBeArrayOfSize(1);
 
-            expect(response.participants[0]).toEqual({
-                id: 'external-participant-id',
-            });
-            expect(response.participants[1]).toEqual({
-                id: 'external-participant-id-2',
-            });
+            expect(response.participants[0].id).toEqual('external-participant-id');
+            expect(response.participants[1].id).toEqual('external-participant-id-2');
 
-            expect(response.topics[0]).toEqual({
-                id: 'external-topic-id',
-            });
+            expect(response.topics[0].id).toEqual('external-topic-id');
         });
     });
 });

@@ -41,4 +41,33 @@ describe('SessionService', () => {
         expect(session.getStart()).toEqual(start);
         expect(session.getEnd()).toBeUndefined();
     });
+
+    it('should add a topic to a session', async () => {
+        const session = new Session('clientId', new Date());
+
+        jest.spyOn(session, 'addTopic');
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+        jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
+
+        const topic = new Topic('external-topic-1', new Majority(MajorityType.relative), 10, ['yes', 'no']);
+
+        const savedTopic = await service.addTopic('sessionId', topic);
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('sessionId');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
+
+        expect(session.addTopic).toHaveBeenCalledWith(topic);
+        expect(session.addTopic).toHaveBeenCalledTimes(1);
+
+        expect(persistenceService.save).toHaveBeenCalledWith(session);
+        expect(persistenceService.save).toHaveBeenCalledTimes(1);
+
+        expect(savedTopic).toBeInstanceOf(Topic);
+        expect(savedTopic.getExternalId()).toEqual(topic.getExternalId());
+        expect(savedTopic.getMajority().getType()).toEqual(topic.getMajority().getType());
+        expect(savedTopic.getMajority().getQuorumInPercent()).toEqual(topic.getMajority().getQuorumInPercent());
+        expect(savedTopic.getRequiredNumberOfShares()).toEqual(topic.getRequiredNumberOfShares());
+        expect(savedTopic.getAnswerOptions()).toEqual(topic.getAnswerOptions());
+        expect(savedTopic.getAbstentionAnswerOption()).toEqual(topic.getAbstentionAnswerOption());
+    });
 });

@@ -74,12 +74,24 @@ export class Session {
         return this;
     }
 
+    public addParticipant(participant: Participant): this {
+        this.participants.push(participant);
+
+        return this;
+    }
+
     public getTopics(): Topic[] {
         return this.topics;
     }
 
-    public setTopics(ballots: Topic[]): this {
-        this.topics = ballots;
+    public setTopics(topics: Topic[]): this {
+        this.topics = topics;
+
+        return this;
+    }
+
+    public addTopic(topic: Topic): this {
+        this.topics.push(topic);
 
         return this;
     }

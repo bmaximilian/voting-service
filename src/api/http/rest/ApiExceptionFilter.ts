@@ -1,13 +1,15 @@
 import { BaseExceptionFilter } from '@nestjs/core';
-import { ArgumentsHost, Catch, HttpException, UnauthorizedException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
+import { SessionNotFoundException } from '../../../domain';
 
 @Catch()
 export class ApiExceptionFilter extends BaseExceptionFilter {
     private exceptionMap: Record<string, (error: Error) => HttpException> = {
         [TokenInvalidError.name]: (e: Error) => new UnauthorizedException(e.message),
         [TokenNotFoundError.name]: (e: Error) => new UnauthorizedException(e.message),
+        [SessionNotFoundException.name]: (e: Error) => new NotFoundException(e.message),
     };
 
     /**

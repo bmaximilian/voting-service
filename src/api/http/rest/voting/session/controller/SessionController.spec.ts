@@ -3,6 +3,9 @@ import { CreateSessionRequestResponseFactory } from '../factory/CreateSessionReq
 import { Session, SessionService } from '../../../../../../domain';
 import { ApiRequest } from '../../../../../../infrastructure/security/jwt/ApiRequest';
 import { CreateSessionRequest } from '../request/CreateSessionRequest';
+import { CreateTopicRequestResponseFactory } from '../factory/CreateTopicRequestResponseFactory';
+import { CreateParticipantRequestResponseFactory } from '../factory/CreateParticipantRequestResponseFactory';
+import { ExternalIdComposer } from '../factory/ExternalIdComposer';
 import { SessionController } from './SessionController';
 
 describe('SessionController', () => {
@@ -12,10 +15,16 @@ describe('SessionController', () => {
 
     beforeEach(async () => {
         service = createMock<SessionService>();
-        controller = new SessionController(new CreateSessionRequestResponseFactory(), service);
+        const externalIdComposer = new ExternalIdComposer();
+        const topicFactory = new CreateTopicRequestResponseFactory(externalIdComposer);
+        const participantFactory = new CreateParticipantRequestResponseFactory(externalIdComposer);
+        controller = new SessionController(
+            new CreateSessionRequestResponseFactory(participantFactory, topicFactory),
+            service,
+        );
     });
 
-    describe('session', () => {
+    describe('create session', () => {
         it('should return a created session', async () => {
             jest.spyOn(service, 'create').mockImplementation((sess: Session) => Promise.resolve(sess.setId('foo')));
 

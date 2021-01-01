@@ -5,3 +5,4 @@ export { Participant } from './model/Participant';
 export { Topic } from './model/Topic';
 export { Mandate } from './model/Mandate';
 export { MajorityType, Majority } from './model/Majority';
+export { SessionNotFoundException } from './exception/SessionNotFoundException';
