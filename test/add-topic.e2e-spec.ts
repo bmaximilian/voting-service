@@ -64,7 +64,7 @@ describe('POST /api/v1/sessions/{id}/topics', () => {
         expect(response.status).toEqual(404);
         expect(response.body).toEqual({
             error: 'Not Found',
-            message: 'Session with id invalid-session-id not found',
+            message: 'Session with the id invalid-session-id not found',
             statusCode: 404,
         });
     });
