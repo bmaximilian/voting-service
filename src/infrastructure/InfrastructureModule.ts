@@ -12,6 +12,7 @@ import { TopicEntityFactory } from './persistence/typeorm/factories/TopicEntityF
 import { ParticipantEntityFactory } from './persistence/typeorm/factories/ParticipantEntityFactory';
 import { BallotEntityFactory } from './persistence/typeorm/factories/BallotEntityFactory';
 import { ParticipantPersistenceService } from './persistence/typeorm/service/ParticipantPersistenceService';
+import { TopicPersistenceService } from './persistence/typeorm/service/TopicPersistenceService';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { ParticipantPersistenceService } from './persistence/typeorm/service/Par
     providers: [
         { provide: AbstractSessionPersistenceService, useClass: SessionPersistenceService },
         ParticipantPersistenceService,
+        TopicPersistenceService,
         SessionEntityFactory,
         TopicEntityFactory,
         ParticipantEntityFactory,

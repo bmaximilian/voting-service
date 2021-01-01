@@ -3,6 +3,7 @@ import { AbstractSessionPersistenceService, Session, SessionNotFoundException } 
 import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionEntityFactory } from '../factories/SessionEntityFactory';
 import { ParticipantPersistenceService } from './ParticipantPersistenceService';
+import { TopicPersistenceService } from './TopicPersistenceService';
 
 @Injectable()
 export class SessionPersistenceService extends AbstractSessionPersistenceService {
@@ -10,6 +11,7 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
         private sessionRepository: SessionRepository,
         private sessionFactory: SessionEntityFactory,
         private participantPersistenceService: ParticipantPersistenceService,
+        private topicPersistenceService: TopicPersistenceService,
     ) {
         super();
     }
@@ -27,9 +29,29 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
     public async save(session: Session): Promise<Session> {
         const sessionEntity = this.sessionFactory.toEntity(session);
 
-        const savedSession = await this.sessionRepository.save(sessionEntity);
+        // set sub entities to undefined to avoid saving them, when saving the parent entity
+        sessionEntity.participants = undefined;
+        sessionEntity.topics = undefined;
 
-        return this.sessionFactory.fromEntity(savedSession);
+        const savedSessionEntity = await this.sessionRepository.save(sessionEntity);
+        const savedSession = this.sessionFactory.fromEntity(savedSessionEntity);
+
+        // store new (unsaved) participants in the session
+        // changes/mutations to participants should be made via the ParticipantPersistenceService
+        const savedParticipants = await this.createEntitiesWithoutIdInSubCollection(
+            session.getParticipants(),
+            (participant) => this.participantPersistenceService.create(participant, savedSessionEntity),
+        );
+        savedSession.setParticipants(savedParticipants);
+
+        // store new (unsaved) topics in the session
+        // changes/mutations to topics should be made via the TopicPersistenceService
+        const savedTopics = await this.createEntitiesWithoutIdInSubCollection(session.getTopics(), (topic) =>
+            this.topicPersistenceService.create(topic, savedSessionEntity),
+        );
+        savedSession.setTopics(savedTopics);
+
+        return savedSession;
     }
 
     public async findById(id: string): Promise<Session> {
@@ -40,5 +62,18 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
         }
 
         return this.sessionFactory.fromEntity(session);
+    }
+
+    private async createEntitiesWithoutIdInSubCollection<T extends { getId: () => string }>(
+        collection: T[],
+        createFn: (item: T) => Promise<T>,
+    ): Promise<T[]> {
+        return Promise.all(
+            collection.map((item) => {
+                if (item.getId()) return item;
+
+                return createFn(item);
+            }),
+        );
     }
 }
