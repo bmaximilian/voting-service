@@ -20,6 +20,7 @@ import { MandateEntity } from '../entities/MandateEntity';
 import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionPersistenceService } from './SessionPersistenceService';
 import { ParticipantPersistenceService } from './ParticipantPersistenceService';
+import { TopicPersistenceService } from './TopicPersistenceService';
 
 describe('SessionPersistenceService', () => {
     let app: INestApplication;
@@ -33,6 +34,7 @@ describe('SessionPersistenceService', () => {
             providers: [
                 SessionPersistenceService,
                 ParticipantPersistenceService,
+                TopicPersistenceService,
                 SessionEntityFactory,
                 TopicEntityFactory,
                 ParticipantEntityFactory,
