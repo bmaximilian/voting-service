@@ -7,6 +7,7 @@ import {
     Mandate,
     Participant,
     Session,
+    SessionNotFoundException,
     Topic,
 } from '../../../../domain';
 import { createDatabaseModuleImports } from '../testing/createDatabaseModuleImports';
@@ -354,6 +355,12 @@ describe('SessionPersistenceService', () => {
                 expect(session.getClientId()).toEqual(createdSession.getClientId());
                 expect(session.getStart()).toEqual(createdSession.getStart());
                 expect(session.getEnd()).toEqual(createdSession.getEnd());
+            });
+
+            it('should throw if a session is not found', async () => {
+                await expect(service.findById('not-the-session-you-are-looking-for')).rejects.toThrow(
+                    SessionNotFoundException,
+                );
             });
         });
 

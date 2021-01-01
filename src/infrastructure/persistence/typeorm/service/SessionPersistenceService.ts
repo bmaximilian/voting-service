@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AbstractSessionPersistenceService, Session } from '../../../../domain';
+import { AbstractSessionPersistenceService, Session, SessionNotFoundException } from '../../../../domain';
 import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionEntityFactory } from '../factories/SessionEntityFactory';
 import { ParticipantPersistenceService } from './ParticipantPersistenceService';
@@ -34,6 +34,10 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
 
     public async findById(id: string): Promise<Session> {
         const session = await this.sessionRepository.findOne(id);
+
+        if (!session) {
+            throw new SessionNotFoundException(id);
+        }
 
         return this.sessionFactory.fromEntity(session);
     }
