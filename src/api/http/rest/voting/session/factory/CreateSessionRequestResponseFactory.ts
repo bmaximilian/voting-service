@@ -27,10 +27,10 @@ export class CreateSessionRequestResponseFactory {
         response.start = session.getStart();
         response.end = session.getEnd();
         response.participants = session.getParticipants().map((participant) => ({
-            id: participant.getExternalId(),
+            id: this.decomposeExternalId(participant.getExternalId(), session.getClientId()),
         }));
         response.topics = session.getTopics().map((topic) => ({
-            id: topic.getExternalId(),
+            id: this.decomposeExternalId(topic.getExternalId(), session.getClientId()),
         }));
 
         return response;
@@ -39,7 +39,10 @@ export class CreateSessionRequestResponseFactory {
     private setSessionParticipants(session: Session, participants: CreateSessionParticipant[]): void {
         session.setParticipants(
             participants.map((participantRequest) => {
-                const participant = new Participant(participantRequest.id, participantRequest.shares);
+                const participant = new Participant(
+                    this.composeExternalId(participantRequest.id, session.getClientId()),
+                    participantRequest.shares,
+                );
 
                 if (participantRequest.mandates) {
                     participant.setMandates(
@@ -47,7 +50,7 @@ export class CreateSessionRequestResponseFactory {
                             (mandateId) =>
                                 new Mandate(
                                     // shares is set to 0 because only the id matters for the mandate
-                                    new Participant(mandateId, 0),
+                                    new Participant(this.composeExternalId(mandateId, session.getClientId()), 0),
                                 ),
                         ),
                     );
@@ -63,7 +66,7 @@ export class CreateSessionRequestResponseFactory {
             topics.map((topicRequest) => {
                 const majority = new Majority(topicRequest.majority.type, topicRequest.majority.quorumInPercent);
                 const topic = new Topic(
-                    topicRequest.id,
+                    this.composeExternalId(topicRequest.id, session.getClientId()),
                     majority,
                     topicRequest.requiredNumberOfShares,
                     topicRequest.answerOptions,
@@ -73,5 +76,13 @@ export class CreateSessionRequestResponseFactory {
                 return topic;
             }),
         );
+    }
+
+    private composeExternalId(id: string, clientId: string): string {
+        return `${clientId}__${id}`;
+    }
+
+    private decomposeExternalId(id: string, clientId: string): string {
+        return id.substr(clientId.length + 2);
     }
 }
