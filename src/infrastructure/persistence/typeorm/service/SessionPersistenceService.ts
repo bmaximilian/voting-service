@@ -24,6 +24,14 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
         return this.findById(savedSession.id);
     }
 
+    public async save(session: Session): Promise<Session> {
+        const sessionEntity = this.sessionFactory.toEntity(session);
+
+        const savedSession = await this.sessionRepository.save(sessionEntity);
+
+        return this.sessionFactory.fromEntity(savedSession);
+    }
+
     public async findById(id: string): Promise<Session> {
         const session = await this.sessionRepository.findOne(id);
 

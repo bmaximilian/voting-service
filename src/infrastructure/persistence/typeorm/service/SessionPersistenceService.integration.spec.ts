@@ -16,6 +16,7 @@ import { ParticipantEntityFactory } from '../factories/ParticipantEntityFactory'
 import { BallotEntityFactory } from '../factories/BallotEntityFactory';
 import { MandateRepository } from '../repositories/MandateRepository';
 import { MandateEntity } from '../entities/MandateEntity';
+import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionPersistenceService } from './SessionPersistenceService';
 import { ParticipantPersistenceService } from './ParticipantPersistenceService';
 
@@ -23,6 +24,7 @@ describe('SessionPersistenceService', () => {
     let app: INestApplication;
     let service: SessionPersistenceService;
     let mandateRepository: MandateRepository;
+    let sessionRepository: SessionRepository;
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
@@ -40,6 +42,7 @@ describe('SessionPersistenceService', () => {
 
         service = app.get(SessionPersistenceService);
         mandateRepository = app.get(MandateRepository);
+        sessionRepository = app.get(SessionRepository);
     });
 
     afterAll(async () => {
@@ -318,5 +321,107 @@ describe('SessionPersistenceService', () => {
         expect(participant2Mandates[0].participant.externalId).toEqual(newSession.getParticipants()[0].getExternalId());
         expect(participant2Mandates[0].mandatedBy.id).toEqual(newSession.getParticipants()[1].getId());
         expect(participant2Mandates[0].mandatedBy.externalId).toEqual(newSession.getParticipants()[1].getExternalId());
+    });
+
+    describe('after create', () => {
+        let createdSession: Session;
+
+        beforeAll(async () => {
+            const participant1 = new Participant('SessionPersistenceService:after-create:1', 10);
+            const topic = new Topic(
+                'SessionPersistenceService:after-create:1',
+                new Majority(MajorityType.single),
+                30,
+                ['yes', 'no', 'abstention'],
+                'abstention',
+            );
+            createdSession = await service.create(
+                new Session('client', new Date(), new Date(), undefined, [participant1], [topic]),
+            );
+        });
+
+        describe('find', () => {
+            it('should find a session by id', async () => {
+                jest.spyOn(sessionRepository, 'findOne');
+
+                const session = await service.findById(createdSession.getId());
+
+                expect(sessionRepository.findOne).toHaveBeenCalledTimes(1);
+                expect(sessionRepository.findOne).toHaveBeenCalledWith(createdSession.getId());
+
+                expect(session).toBeInstanceOf(Session);
+                expect(session.getId()).toEqual(createdSession.getId());
+                expect(session.getClientId()).toEqual(createdSession.getClientId());
+                expect(session.getStart()).toEqual(createdSession.getStart());
+                expect(session.getEnd()).toEqual(createdSession.getEnd());
+            });
+        });
+
+        describe('save', () => {
+            it('should save topics for a session', async () => {
+                jest.spyOn(sessionRepository, 'save').mockClear();
+
+                const existingSession = await service.findById(createdSession.getId());
+
+                expect(existingSession.getTopics()).toBeArrayOfSize(1);
+                existingSession.addTopic(
+                    new Topic(
+                        'SessionPersistenceService:save-session-topics:1',
+                        new Majority(MajorityType.single),
+                        30,
+                        ['yes', 'no', 'abstention'],
+                        'abstention',
+                    ),
+                );
+
+                const session = await service.save(existingSession);
+
+                expect(sessionRepository.save).toHaveBeenCalledTimes(1);
+
+                expect(session).toBeInstanceOf(Session);
+                expect(session.getId()).toEqual(existingSession.getId());
+                expect(session.getClientId()).toEqual(existingSession.getClientId());
+                expect(session.getStart()).toEqual(existingSession.getStart());
+                expect(session.getEnd()).toEqual(existingSession.getEnd());
+                expect(session.getTopics()).toBeArrayOfSize(2);
+                expect(session.getTopics()[0].getId()).toBeString();
+                expect(session.getTopics()[0].getExternalId()).toEqual('SessionPersistenceService:after-create:1');
+                expect(session.getTopics()[1].getId()).toBeString();
+                expect(session.getTopics()[1].getExternalId()).toEqual(
+                    'SessionPersistenceService:save-session-topics:1',
+                );
+            });
+
+            it('should save participants for a session', async () => {
+                jest.spyOn(sessionRepository, 'save').mockClear();
+
+                const existingSession = await service.findById(createdSession.getId());
+
+                expect(existingSession.getParticipants()).toBeArrayOfSize(1);
+                existingSession.addParticipant(
+                    new Participant('SessionPersistenceService:save-session-participants:1', 10),
+                );
+
+                const session = await service.save(existingSession);
+
+                expect(sessionRepository.save).toHaveBeenCalledTimes(1);
+
+                expect(session).toBeInstanceOf(Session);
+                expect(session.getId()).toEqual(existingSession.getId());
+                expect(session.getClientId()).toEqual(existingSession.getClientId());
+                expect(session.getStart()).toEqual(existingSession.getStart());
+                expect(session.getEnd()).toEqual(existingSession.getEnd());
+                expect(session.getParticipants()).toBeArrayOfSize(2);
+                expect(session.getParticipants()[0].getId()).toBeString();
+                expect(session.getParticipants()[0].getExternalId()).toEqual(
+                    'SessionPersistenceService:after-create:1',
+                );
+                expect(session.getParticipants()[1].getId()).toBeString();
+                expect(session.getParticipants()[1].getExternalId()).toEqual(
+                    'SessionPersistenceService:save-session-participants:1',
+                );
+                expect(session.getParticipants()[1].getShares()).toEqual(10);
+            });
+        });
     });
 });
