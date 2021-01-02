@@ -118,4 +118,31 @@ describe('POST /api/v1/sessions/{id}/participants', () => {
             statusCode: 400,
         });
     });
+
+    it('should throw bad request when adding an already existing participant', async () => {
+        const addParticipantResponse = await request(app.getHttpServer())
+            .post(`/api/v1/sessions/${session.id}/participants`)
+            .set('Authorization', validToken)
+            .send({
+                id: 'participant_1',
+                shares: 1,
+            });
+
+        expect(addParticipantResponse.status).toEqual(201);
+
+        const response = await request(app.getHttpServer())
+            .post(`/api/v1/sessions/${session.id}/participants`)
+            .set('Authorization', validToken)
+            .send({
+                id: 'participant_1',
+                shares: 1,
+            });
+
+        expect(addParticipantResponse.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Participant already exists',
+            statusCode: 400,
+        });
+    });
 });

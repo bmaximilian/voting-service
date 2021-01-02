@@ -92,4 +92,46 @@ describe('POST /api/v1/sessions', () => {
         expect(findItemWithId(response.body.topics, 'top_1')).toBeDefined();
         expect(findItemWithId(response.body.topics, 'top_2')).toBeDefined();
     });
+
+    it('should throw when creating a session with invalid mandates', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                participants: [
+                    { id: 'par_1', shares: 20 },
+                    { id: 'par_2', shares: 50, mandates: ['par_1'] },
+                    { id: 'par_3', shares: 10, mandates: ['par_4'] },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Cannot create mandate for participant with id par_4. Participant does not exist',
+            statusCode: 400,
+        });
+    });
+
+    it('should throw when creating a session with doubled external ids', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                participants: [
+                    { id: 'par_1', shares: 20 },
+                    { id: 'par_1', shares: 50 },
+                    { id: 'par_2', shares: 10, mandates: ['par_1'] },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Participant with id par_1 occurs multiple times',
+            statusCode: 400,
+        });
+    });
 });
