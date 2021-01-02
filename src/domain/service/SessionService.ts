@@ -7,6 +7,8 @@ import { Mandate } from '../model/Mandate';
 import { ParticipantForMandateNotExistingException } from '../exception/ParticipantForMandateNotExistingException';
 import { ParticipantAlreadyExistsException } from '../exception/ParticipantAlreadyExistsException';
 import { ParticipantDuplicatedException } from '../exception/ParticipantDuplicatedException';
+import { TopicAlreadyExistsException } from '../exception/TopicAlreadyExistsException';
+import { TopicDuplicatedException } from '../exception/TopicDuplicatedException';
 
 @Injectable()
 export class SessionService {
@@ -19,6 +21,12 @@ export class SessionService {
             throw new ParticipantDuplicatedException(e.id, e.clientId);
         }
 
+        try {
+            this.validateTopics(session);
+        } catch (e) {
+            throw new TopicDuplicatedException(e.id, e.clientId);
+        }
+
         this.validateMandatesForParticipants(session);
 
         return this.sessionPersistenceService.create(session);
@@ -29,6 +37,7 @@ export class SessionService {
 
         session.addTopic(topic);
 
+        this.validateTopics(session);
         const savedSession = await this.sessionPersistenceService.save(session);
 
         return savedSession.getTopics().find((savedTopic) => savedTopic.getExternalId() === topic.getExternalId());
@@ -57,6 +66,18 @@ export class SessionService {
             }
 
             externalParticipantIds.add(participant.getExternalId());
+        });
+    }
+
+    private validateTopics(session: Session): void {
+        const externalTopicIds = new Set();
+
+        session.getTopics().forEach((topic) => {
+            if (externalTopicIds.has(topic.getExternalId())) {
+                throw new TopicAlreadyExistsException(topic.getExternalId(), session.getClientId());
+            }
+
+            externalTopicIds.add(topic.getExternalId());
         });
     }
 

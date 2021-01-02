@@ -13,6 +13,8 @@ import { SessionNotFoundException } from '../../../domain';
 import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
 import { ParticipantAlreadyExistsException } from '../../../domain/exception/ParticipantAlreadyExistsException';
 import { ParticipantDuplicatedException } from '../../../domain/exception/ParticipantDuplicatedException';
+import { TopicAlreadyExistsException } from '../../../domain/exception/TopicAlreadyExistsException';
+import { TopicDuplicatedException } from '../../../domain/exception/TopicDuplicatedException';
 import { ExternalIdComposer } from './voting/session/factory/ExternalIdComposer';
 
 @Catch()
@@ -37,6 +39,14 @@ export class ApiExceptionFilter extends BaseExceptionFilter {
         [ParticipantDuplicatedException.name]: (e: ParticipantDuplicatedException) =>
             new BadRequestException(
                 `Participant with id ${this.externalIdComposer.decompose(e.id, e.clientId)} occurs multiple times`,
+            ),
+        [TopicAlreadyExistsException.name]: (e: TopicAlreadyExistsException) =>
+            new BadRequestException(
+                `Topic with id ${this.externalIdComposer.decompose(e.id, e.clientId)} already exists`,
+            ),
+        [TopicDuplicatedException.name]: (e: TopicDuplicatedException) =>
+            new BadRequestException(
+                `Topic with id ${this.externalIdComposer.decompose(e.id, e.clientId)} occurs multiple times`,
             ),
     };
 
