@@ -27,8 +27,20 @@ export class CreateParticipantRequestResponseFactory {
     }
 
     public toResponse(participant: Participant, clientId: string): SessionParticipantResponse {
+        let mandates;
+
+        if (participant.getMandates().length) {
+            mandates = participant
+                .getMandates()
+                .map((mandate) =>
+                    this.externalIdComposer.decompose(mandate.getParticipant().getExternalId(), clientId),
+                );
+        }
+
         return {
             id: this.externalIdComposer.decompose(participant.getExternalId(), clientId),
+            shares: participant.getShares(),
+            mandates,
         };
     }
 }

@@ -37,7 +37,8 @@ describe('POST /api/v1/sessions/{id}/participants', () => {
                 'id should not be empty',
                 'id must be a string',
                 'shares should not be empty',
-                'shares must be a number',
+                'shares must not be less than 0',
+                'shares must be a number conforming to the specified constraints',
             ],
             statusCode: 400,
         });

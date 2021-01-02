@@ -9,9 +9,10 @@ import { CreateTopicRequestResponseFactory } from './http/rest/voting/session/fa
 import { CreateParticipantRequestResponseFactory } from './http/rest/voting/session/factory/CreateParticipantRequestResponseFactory';
 import { ExternalIdComposer } from './http/rest/voting/session/factory/ExternalIdComposer';
 import { TopicController } from './http/rest/voting/session/controller/TopicController';
+import { ParticipantController } from './http/rest/voting/session/controller/ParticipantController';
 
 @Module({
-    controllers: [HealthCheckController, SessionController, TopicController],
+    controllers: [HealthCheckController, SessionController, TopicController, ParticipantController],
     providers: [
         { provide: APP_FILTER, useClass: ApiExceptionFilter },
         CreateSessionRequestResponseFactory,
