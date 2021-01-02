@@ -12,8 +12,10 @@ export class CreateParticipantRequestResponseFactory {
         const participant = new Participant(this.externalIdComposer.compose(request.id, clientId), request.shares);
 
         if (request.mandates) {
+            const mandates = new Set(request.mandates);
+
             participant.setMandates(
-                request.mandates.map(
+                Array.from(mandates).map(
                     (mandateId) =>
                         new Mandate(
                             // shares is set to 0 because only the id matters for the mandate

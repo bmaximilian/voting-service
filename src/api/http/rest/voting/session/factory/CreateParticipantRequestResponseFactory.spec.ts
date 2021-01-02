@@ -42,6 +42,24 @@ describe('CreateParticipantRequestResponseFactory', () => {
             );
             expect(participant.getMandates()[0].getId()).toBeUndefined();
         });
+
+        it('should ignore doubled mandates', () => {
+            const request: CreateSessionParticipant = {
+                id: 'external-participant-id',
+                shares: 1,
+                mandates: ['external-participant-id-2', 'external-participant-id-2'],
+            };
+
+            const participant = factory.fromRequest(request, 'the-client');
+
+            expect(participant.getExternalId()).toEqual(`the-client__${request.id}`);
+            expect(participant.getShares()).toEqual(1);
+            expect(participant.getMandates()).toBeArrayOfSize(1);
+            expect(participant.getMandates()[0].getParticipant().getExternalId()).toEqual(
+                'the-client__external-participant-id-2',
+            );
+            expect(participant.getMandates()[0].getId()).toBeUndefined();
+        });
     });
 
     describe('toResponse', () => {
