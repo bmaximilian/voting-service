@@ -114,7 +114,7 @@ describe('POST /api/v1/sessions', () => {
         });
     });
 
-    it('should throw when creating a session with doubled external ids', async () => {
+    it('should throw when creating a session with doubled external ids for participants', async () => {
         const response = await request(app.getHttpServer())
             .post('/api/v1/sessions')
             .set('Authorization', validToken)
@@ -131,6 +131,42 @@ describe('POST /api/v1/sessions', () => {
         expect(response.body).toEqual({
             error: 'Bad Request',
             message: 'Participant with id par_1 occurs multiple times',
+            statusCode: 400,
+        });
+    });
+
+    it('should throw when creating a session with doubled external ids for topics', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                topics: [
+                    {
+                        id: 'top_1',
+                        answerOptions: ['yes', 'no', 'abstention'],
+                        abstentionAnswerOption: 'abstention',
+                        requiredNumberOfShares: 70,
+                        majority: {
+                            type: 'relative',
+                        },
+                    },
+                    {
+                        id: 'top_1',
+                        answerOptions: ['yes', 'no'],
+                        requiredNumberOfShares: 80,
+                        majority: {
+                            type: 'qualified',
+                            quorumInPercent: 66.66,
+                        },
+                    },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Topic with id top_1 occurs multiple times',
             statusCode: 400,
         });
     });

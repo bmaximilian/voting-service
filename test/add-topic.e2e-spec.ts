@@ -92,4 +92,35 @@ describe('POST /api/v1/sessions/{id}/topics', () => {
             type: 'relative',
         });
     });
+
+    it('should throw bad request when adding an already existing topic', async () => {
+        const topic = {
+            id: 'doubled-topic:1',
+            answerOptions: ['yes', 'no', 'abstention'],
+            abstentionAnswerOption: 'abstention',
+            requiredNumberOfShares: 70,
+            majority: {
+                type: 'relative',
+            },
+        };
+
+        const createResponse = await request(app.getHttpServer())
+            .post(`/api/v1/sessions/${session.id}/topics`)
+            .set('Authorization', validToken)
+            .send(topic);
+
+        expect(createResponse.status).toEqual(201);
+
+        const response = await request(app.getHttpServer())
+            .post(`/api/v1/sessions/${session.id}/topics`)
+            .set('Authorization', validToken)
+            .send(topic);
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Topic with id doubled-topic:1 already exists',
+            statusCode: 400,
+        });
+    });
 });
