@@ -92,4 +92,82 @@ describe('POST /api/v1/sessions', () => {
         expect(findItemWithId(response.body.topics, 'top_1')).toBeDefined();
         expect(findItemWithId(response.body.topics, 'top_2')).toBeDefined();
     });
+
+    it('should throw when creating a session with invalid mandates', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                participants: [
+                    { id: 'par_1', shares: 20 },
+                    { id: 'par_2', shares: 50, mandates: ['par_1'] },
+                    { id: 'par_3', shares: 10, mandates: ['par_4'] },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Cannot create mandate for participant with id par_4. Participant does not exist',
+            statusCode: 400,
+        });
+    });
+
+    it('should throw when creating a session with doubled external ids for participants', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                participants: [
+                    { id: 'par_1', shares: 20 },
+                    { id: 'par_1', shares: 50 },
+                    { id: 'par_2', shares: 10, mandates: ['par_1'] },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Participant with id par_1 occurs multiple times',
+            statusCode: 400,
+        });
+    });
+
+    it('should throw when creating a session with doubled external ids for topics', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/v1/sessions')
+            .set('Authorization', validToken)
+            .send({
+                start: '2020-12-31T11:30:00.000Z',
+                topics: [
+                    {
+                        id: 'top_1',
+                        answerOptions: ['yes', 'no', 'abstention'],
+                        abstentionAnswerOption: 'abstention',
+                        requiredNumberOfShares: 70,
+                        majority: {
+                            type: 'relative',
+                        },
+                    },
+                    {
+                        id: 'top_1',
+                        answerOptions: ['yes', 'no'],
+                        requiredNumberOfShares: 80,
+                        majority: {
+                            type: 'qualified',
+                            quorumInPercent: 66.66,
+                        },
+                    },
+                ],
+            });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+            error: 'Bad Request',
+            message: 'Topic with id top_1 occurs multiple times',
+            statusCode: 400,
+        });
+    });
 });

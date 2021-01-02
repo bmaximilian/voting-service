@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AbstractSessionPersistenceService, Session, SessionNotFoundException } from '../../../../domain';
 import { SessionRepository } from '../repositories/SessionRepository';
 import { SessionEntityFactory } from '../factories/SessionEntityFactory';
+import { ParticipantEntityFactory } from '../factories/ParticipantEntityFactory';
 import { ParticipantPersistenceService } from './ParticipantPersistenceService';
 import { TopicPersistenceService } from './TopicPersistenceService';
 
@@ -11,6 +12,7 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
         private sessionRepository: SessionRepository,
         private sessionFactory: SessionEntityFactory,
         private participantPersistenceService: ParticipantPersistenceService,
+        private participantFactory: ParticipantEntityFactory,
         private topicPersistenceService: TopicPersistenceService,
     ) {
         super();
@@ -43,6 +45,13 @@ export class SessionPersistenceService extends AbstractSessionPersistenceService
             (participant) => this.participantPersistenceService.create(participant, savedSessionEntity),
         );
         savedSession.setParticipants(savedParticipants);
+
+        // newly added participants could also have a mandates array
+        // mandates in this array are not persisted and must be saved
+        await this.participantPersistenceService.saveMandates(
+            session.getParticipants(),
+            savedParticipants.map((participant) => this.participantFactory.toEntity(participant)),
+        );
 
         // store new (unsaved) topics in the session
         // changes/mutations to topics should be made via the TopicPersistenceService

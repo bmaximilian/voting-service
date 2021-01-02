@@ -26,7 +26,7 @@ export class CreateSessionParticipant {
     @IsArray()
     @IsOptional()
     @ApiModelProperty({
-        description: 'Ids of participants this participant is enabled to vote for',
+        description: 'Ids (external identifier) of participants this participant is enabled to vote for',
         type: [String],
         required: false,
         isArray: true,

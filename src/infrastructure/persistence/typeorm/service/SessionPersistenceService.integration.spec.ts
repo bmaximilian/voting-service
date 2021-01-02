@@ -431,6 +431,46 @@ describe('SessionPersistenceService', () => {
                 );
                 expect(session.getParticipants()[1].getShares()).toEqual(10);
             });
+
+            it('should add a participant with mandate for an existing participant to the session', async () => {
+                jest.spyOn(sessionRepository, 'save').mockClear();
+
+                const existingSession = await service.findById(createdSession.getId());
+
+                expect(existingSession.getParticipants()).toBeArray();
+                expect(existingSession.getParticipants()).not.toBeEmpty();
+
+                existingSession.addParticipant(
+                    new Participant('SessionPersistenceService:save-session-participants:2', 15, undefined, [
+                        new Mandate(existingSession.getParticipants()[0]),
+                    ]),
+                );
+
+                const session = await service.save(existingSession);
+
+                expect(sessionRepository.save).toHaveBeenCalledTimes(1);
+
+                expect(session.getParticipants()).toBeArrayOfSize(existingSession.getParticipants().length);
+
+                const savedParticipant = session.getParticipants()[session.getParticipants().length - 1];
+                expect(savedParticipant.getId()).toBeString();
+                expect(savedParticipant.getExternalId()).toEqual(
+                    'SessionPersistenceService:save-session-participants:2',
+                );
+                expect(savedParticipant.getShares()).toEqual(15);
+
+                const participantMandates = await mandateRepository.find({
+                    mandatedBy: { id: savedParticipant.getId() },
+                });
+                expect(participantMandates).toBeArrayOfSize(1);
+                expect(participantMandates[0].id).toBeString();
+                expect(participantMandates[0].participant.id).toEqual(existingSession.getParticipants()[0].getId());
+                expect(participantMandates[0].participant.externalId).toEqual(
+                    existingSession.getParticipants()[0].getExternalId(),
+                );
+                expect(participantMandates[0].mandatedBy.id).toEqual(savedParticipant.getId());
+                expect(participantMandates[0].mandatedBy.externalId).toEqual(savedParticipant.getExternalId());
+            });
         });
     });
 });

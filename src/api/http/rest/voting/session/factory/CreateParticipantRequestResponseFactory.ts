@@ -12,8 +12,10 @@ export class CreateParticipantRequestResponseFactory {
         const participant = new Participant(this.externalIdComposer.compose(request.id, clientId), request.shares);
 
         if (request.mandates) {
+            const mandates = new Set(request.mandates);
+
             participant.setMandates(
-                request.mandates.map(
+                Array.from(mandates).map(
                     (mandateId) =>
                         new Mandate(
                             // shares is set to 0 because only the id matters for the mandate
@@ -27,8 +29,20 @@ export class CreateParticipantRequestResponseFactory {
     }
 
     public toResponse(participant: Participant, clientId: string): SessionParticipantResponse {
+        let mandates;
+
+        if (participant.getMandates().length) {
+            mandates = participant
+                .getMandates()
+                .map((mandate) =>
+                    this.externalIdComposer.decompose(mandate.getParticipant().getExternalId(), clientId),
+                );
+        }
+
         return {
             id: this.externalIdComposer.decompose(participant.getExternalId(), clientId),
+            shares: participant.getShares(),
+            mandates,
         };
     }
 }

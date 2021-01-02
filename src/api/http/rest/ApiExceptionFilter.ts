@@ -1,15 +1,53 @@
 import { BaseExceptionFilter } from '@nestjs/core';
-import { ArgumentsHost, Catch, HttpException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    ArgumentsHost,
+    BadRequestException,
+    Catch,
+    HttpException,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
 import { SessionNotFoundException } from '../../../domain';
+import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
+import { ParticipantAlreadyExistsException } from '../../../domain/exception/ParticipantAlreadyExistsException';
+import { ParticipantDuplicatedException } from '../../../domain/exception/ParticipantDuplicatedException';
+import { TopicAlreadyExistsException } from '../../../domain/exception/TopicAlreadyExistsException';
+import { TopicDuplicatedException } from '../../../domain/exception/TopicDuplicatedException';
+import { ExternalIdComposer } from './voting/session/factory/ExternalIdComposer';
 
 @Catch()
 export class ApiExceptionFilter extends BaseExceptionFilter {
+    private externalIdComposer = new ExternalIdComposer();
+
     private exceptionMap: Record<string, (error: Error) => HttpException> = {
         [TokenInvalidError.name]: (e: Error) => new UnauthorizedException(e.message),
         [TokenNotFoundError.name]: (e: Error) => new UnauthorizedException(e.message),
         [SessionNotFoundException.name]: (e: Error) => new NotFoundException(e.message),
+        [ParticipantForMandateNotExistingException.name]: (e: ParticipantForMandateNotExistingException) =>
+            new BadRequestException(
+                `Cannot create mandate for participant with id ${this.externalIdComposer.decompose(
+                    e.id,
+                    e.clientId,
+                )}. Participant does not exist`,
+            ),
+        [ParticipantAlreadyExistsException.name]: (e: ParticipantAlreadyExistsException) =>
+            new BadRequestException(
+                `Participant with id ${this.externalIdComposer.decompose(e.id, e.clientId)} already exists`,
+            ),
+        [ParticipantDuplicatedException.name]: (e: ParticipantDuplicatedException) =>
+            new BadRequestException(
+                `Participant with id ${this.externalIdComposer.decompose(e.id, e.clientId)} occurs multiple times`,
+            ),
+        [TopicAlreadyExistsException.name]: (e: TopicAlreadyExistsException) =>
+            new BadRequestException(
+                `Topic with id ${this.externalIdComposer.decompose(e.id, e.clientId)} already exists`,
+            ),
+        [TopicDuplicatedException.name]: (e: TopicDuplicatedException) =>
+            new BadRequestException(
+                `Topic with id ${this.externalIdComposer.decompose(e.id, e.clientId)} occurs multiple times`,
+            ),
     };
 
     /**
