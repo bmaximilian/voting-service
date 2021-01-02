@@ -1,15 +1,33 @@
 import { BaseExceptionFilter } from '@nestjs/core';
-import { ArgumentsHost, Catch, HttpException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    ArgumentsHost,
+    BadRequestException,
+    Catch,
+    HttpException,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
 import { SessionNotFoundException } from '../../../domain';
+import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
+import { ExternalIdComposer } from './voting/session/factory/ExternalIdComposer';
 
 @Catch()
 export class ApiExceptionFilter extends BaseExceptionFilter {
+    private externalIdComposer = new ExternalIdComposer();
+
     private exceptionMap: Record<string, (error: Error) => HttpException> = {
         [TokenInvalidError.name]: (e: Error) => new UnauthorizedException(e.message),
         [TokenNotFoundError.name]: (e: Error) => new UnauthorizedException(e.message),
         [SessionNotFoundException.name]: (e: Error) => new NotFoundException(e.message),
+        [ParticipantForMandateNotExistingException.name]: (e: ParticipantForMandateNotExistingException) =>
+            new BadRequestException(
+                `Cannot create mandate for participant with id ${this.externalIdComposer.decompose(
+                    e.id,
+                    e.clientId,
+                )}. Participant does not exist`,
+            ),
     };
 
     /**

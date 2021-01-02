@@ -4,6 +4,8 @@ import { Participant } from '../model/Participant';
 import { Topic } from '../model/Topic';
 import { AbstractSessionPersistenceService } from '../persistence/AbstractSessionPersistenceService';
 import { Majority, MajorityType } from '../model/Majority';
+import { ParticipantForMandateNotExistingException } from '../exception/ParticipantForMandateNotExistingException';
+import { Mandate } from '../model/Mandate';
 import { SessionService } from './SessionService';
 
 describe('SessionService', () => {
@@ -40,6 +42,25 @@ describe('SessionService', () => {
         expect(session.getParticipants()).toContain(participant);
         expect(session.getStart()).toEqual(start);
         expect(session.getEnd()).toBeUndefined();
+    });
+
+    it('should throw when trying to create a session with invalid mandate', async () => {
+        jest.spyOn(persistenceService, 'create');
+
+        const start = new Date();
+        const participant1 = new Participant('external-participant-1', 1, undefined);
+        const participant2 = new Participant('external-participant-2', 1, undefined, [new Mandate(participant1)]);
+        const participant3 = new Participant('external-participant-3', 1, undefined, [
+            new Mandate(new Participant('external-participant-123', 1)),
+        ]);
+
+        await expect(
+            service.create(
+                new Session('test-client', start, undefined, undefined, [participant1, participant2, participant3]),
+            ),
+        ).rejects.toThrow(ParticipantForMandateNotExistingException);
+
+        expect(persistenceService.create).not.toHaveBeenCalled();
     });
 
     it('should add a topic to a session', async () => {
@@ -94,5 +115,57 @@ describe('SessionService', () => {
         expect(savedParticipant).toBeInstanceOf(Participant);
         expect(savedParticipant.getExternalId()).toEqual(participant.getExternalId());
         expect(savedParticipant.getShares()).toEqual(participant.getShares());
+    });
+
+    it('should not throw when adding a participant with valid mandate', async () => {
+        const participant1 = new Participant('external-participant-1', 1, 'participant1');
+        const participant2 = new Participant('external-participant-2', 1, 'participant2', [new Mandate(participant1)]);
+        const session = new Session('clientId', new Date(), undefined, 'sessionId', [participant1, participant2]);
+
+        jest.spyOn(session, 'addParticipant');
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+        jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
+
+        const participant = new Participant('external-participant-3', 1, undefined, [
+            new Mandate(new Participant('external-participant-2', 0)),
+            new Mandate(new Participant('external-participant-1', 0)),
+        ]);
+
+        await service.addParticipant('sessionId', participant);
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('sessionId');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
+
+        expect(session.addParticipant).toHaveBeenCalledWith(participant);
+        expect(session.addParticipant).toHaveBeenCalledTimes(1);
+
+        expect(persistenceService.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw when adding a participant with invalid mandate', async () => {
+        const participant1 = new Participant('external-participant-1', 1, 'participant1');
+        const participant2 = new Participant('external-participant-2', 1, 'participant2', [new Mandate(participant1)]);
+        const session = new Session('clientId', new Date(), undefined, 'sessionId', [participant1, participant2]);
+
+        jest.spyOn(session, 'addParticipant');
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+        jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
+
+        const participant = new Participant('external-participant-1', 1, undefined, [
+            new Mandate(new Participant('external-participant-123', 0)),
+            new Mandate(new Participant('external-participant-1', 0)),
+        ]);
+
+        await expect(service.addParticipant('sessionId', participant)).rejects.toThrow(
+            ParticipantForMandateNotExistingException,
+        );
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('sessionId');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
+
+        expect(session.addParticipant).toHaveBeenCalledWith(participant);
+        expect(session.addParticipant).toHaveBeenCalledTimes(1);
+
+        expect(persistenceService.save).not.toHaveBeenCalled();
     });
 });

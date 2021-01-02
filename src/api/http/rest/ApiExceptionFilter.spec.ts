@@ -3,6 +3,7 @@ import { createMock } from '@golevelup/nestjs-testing';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
 import { SessionNotFoundException } from '../../../domain';
+import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
 import { ApiExceptionFilter } from './ApiExceptionFilter';
 
 describe('ApiExceptionFilter', () => {
@@ -61,6 +62,24 @@ describe('ApiExceptionFilter', () => {
             argumentsHost.getArgByIndex(1),
             { error: 'Not Found', message: 'Session with the id sessionId not found', statusCode: 404 },
             404,
+        );
+    });
+
+    it('should transform a ParticipantForMandateNotExistingException into a BadRequestException', () => {
+        filter.catch(
+            new ParticipantForMandateNotExistingException('clientId__mandatedParticipantId', 'clientId'),
+            argumentsHost,
+        );
+
+        expect(server.reply).toHaveBeenCalledWith(
+            argumentsHost.getArgByIndex(1),
+            {
+                error: 'Bad Request',
+                message:
+                    'Cannot create mandate for participant with id mandatedParticipantId. Participant does not exist',
+                statusCode: 400,
+            },
+            400,
         );
     });
 });
