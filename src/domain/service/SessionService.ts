@@ -5,12 +5,20 @@ import { Topic } from '../model/Topic';
 import { Participant } from '../model/Participant';
 import { Mandate } from '../model/Mandate';
 import { ParticipantForMandateNotExistingException } from '../exception/ParticipantForMandateNotExistingException';
+import { ParticipantAlreadyExistsException } from '../exception/ParticipantAlreadyExistsException';
+import { ParticipantDuplicatedException } from '../exception/ParticipantDuplicatedException';
 
 @Injectable()
 export class SessionService {
     public constructor(private sessionPersistenceService: AbstractSessionPersistenceService) {}
 
     public async create(session: Session): Promise<Session> {
+        try {
+            this.validateParticipants(session);
+        } catch (e) {
+            throw new ParticipantDuplicatedException(e.id, e.clientId);
+        }
+
         this.validateMandatesForParticipants(session);
 
         return this.sessionPersistenceService.create(session);
@@ -31,12 +39,25 @@ export class SessionService {
 
         session.addParticipant(participant);
 
+        this.validateParticipants(session);
         this.validateMandatesForParticipants(session);
         const savedSession = await this.sessionPersistenceService.save(session);
 
         return savedSession
             .getParticipants()
             .find((savedParticipant) => savedParticipant.getExternalId() === participant.getExternalId());
+    }
+
+    private validateParticipants(session: Session): void {
+        const externalParticipantIds = new Set();
+
+        session.getParticipants().forEach((participant) => {
+            if (externalParticipantIds.has(participant.getExternalId())) {
+                throw new ParticipantAlreadyExistsException(participant.getExternalId(), session.getClientId());
+            }
+
+            externalParticipantIds.add(participant.getExternalId());
+        });
     }
 
     private validateMandatesForParticipants(session: Session): void {

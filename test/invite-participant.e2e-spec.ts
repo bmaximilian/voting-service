@@ -124,7 +124,7 @@ describe('POST /api/v1/sessions/{id}/participants', () => {
             .post(`/api/v1/sessions/${session.id}/participants`)
             .set('Authorization', validToken)
             .send({
-                id: 'participant_1',
+                id: 'participant_xyz',
                 shares: 1,
             });
 
@@ -134,14 +134,14 @@ describe('POST /api/v1/sessions/{id}/participants', () => {
             .post(`/api/v1/sessions/${session.id}/participants`)
             .set('Authorization', validToken)
             .send({
-                id: 'participant_1',
+                id: 'participant_xyz',
                 shares: 1,
             });
 
-        expect(addParticipantResponse.status).toEqual(400);
+        expect(response.status).toEqual(400);
         expect(response.body).toEqual({
             error: 'Bad Request',
-            message: 'Participant already exists',
+            message: 'Participant with id participant_xyz already exists',
             statusCode: 400,
         });
     });

@@ -6,6 +6,8 @@ import { AbstractSessionPersistenceService } from '../persistence/AbstractSessio
 import { Majority, MajorityType } from '../model/Majority';
 import { ParticipantForMandateNotExistingException } from '../exception/ParticipantForMandateNotExistingException';
 import { Mandate } from '../model/Mandate';
+import { ParticipantAlreadyExistsException } from '../exception/ParticipantAlreadyExistsException';
+import { ParticipantDuplicatedException } from '../exception/ParticipantDuplicatedException';
 import { SessionService } from './SessionService';
 
 describe('SessionService', () => {
@@ -61,6 +63,17 @@ describe('SessionService', () => {
         ).rejects.toThrow(ParticipantForMandateNotExistingException);
 
         expect(persistenceService.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw when creating a session with duplicated participants', async () => {
+        const participant1 = new Participant('external-participant-1', 1);
+        const session = new Session('clientId', new Date(), undefined, 'sessionId', [participant1, participant1]);
+
+        jest.spyOn(persistenceService, 'create');
+
+        await expect(service.create(session)).rejects.toThrow(ParticipantDuplicatedException);
+
+        expect(persistenceService.save).not.toHaveBeenCalled();
     });
 
     it('should add a topic to a session', async () => {
@@ -151,7 +164,7 @@ describe('SessionService', () => {
         jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
         jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
 
-        const participant = new Participant('external-participant-1', 1, undefined, [
+        const participant = new Participant('external-participant-3', 1, undefined, [
             new Mandate(new Participant('external-participant-123', 0)),
             new Mandate(new Participant('external-participant-1', 0)),
         ]);
@@ -165,6 +178,25 @@ describe('SessionService', () => {
 
         expect(session.addParticipant).toHaveBeenCalledWith(participant);
         expect(session.addParticipant).toHaveBeenCalledTimes(1);
+
+        expect(persistenceService.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw when adding a participant that already exists', async () => {
+        const participant1 = new Participant('external-participant-1', 1, 'participant1');
+        const session = new Session('clientId', new Date(), undefined, 'sessionId', [participant1]);
+
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+        jest.spyOn(persistenceService, 'save').mockResolvedValue(session);
+
+        const participant = new Participant('external-participant-1', 2);
+
+        await expect(service.addParticipant('sessionId', participant)).rejects.toThrow(
+            ParticipantAlreadyExistsException,
+        );
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('sessionId');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
 
         expect(persistenceService.save).not.toHaveBeenCalled();
     });

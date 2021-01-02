@@ -11,6 +11,8 @@ import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInv
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
 import { SessionNotFoundException } from '../../../domain';
 import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
+import { ParticipantAlreadyExistsException } from '../../../domain/exception/ParticipantAlreadyExistsException';
+import { ParticipantDuplicatedException } from '../../../domain/exception/ParticipantDuplicatedException';
 import { ExternalIdComposer } from './voting/session/factory/ExternalIdComposer';
 
 @Catch()
@@ -27,6 +29,14 @@ export class ApiExceptionFilter extends BaseExceptionFilter {
                     e.id,
                     e.clientId,
                 )}. Participant does not exist`,
+            ),
+        [ParticipantAlreadyExistsException.name]: (e: ParticipantAlreadyExistsException) =>
+            new BadRequestException(
+                `Participant with id ${this.externalIdComposer.decompose(e.id, e.clientId)} already exists`,
+            ),
+        [ParticipantDuplicatedException.name]: (e: ParticipantDuplicatedException) =>
+            new BadRequestException(
+                `Participant with id ${this.externalIdComposer.decompose(e.id, e.clientId)} occurs multiple times`,
             ),
     };
 
