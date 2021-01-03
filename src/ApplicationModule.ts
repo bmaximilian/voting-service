@@ -2,7 +2,7 @@ import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConnectionOptions } from 'typeorm';
 import { JwtDecodeMiddleware } from './infrastructure/security/jwt/JwtDecodeMiddleware';
-import { ApiModule } from './api/ApiModule';
+import { HttpApiModule } from './api/http/HttpApiModule';
 import { VotingDomainModule } from './domain/VotingDomainModule';
 import { InfrastructureModule } from './infrastructure/InfrastructureModule'; // eslint-disable-line import/order
 
@@ -20,7 +20,7 @@ const votingDomain = VotingDomainModule.forRoot([InfrastructureModule]);
                 };
             },
         }),
-        ApiModule.forRoot([votingDomain]),
+        HttpApiModule.forRoot([votingDomain]),
     ],
 })
 export class ApplicationModule {
