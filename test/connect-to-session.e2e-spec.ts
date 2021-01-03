@@ -40,26 +40,33 @@ describe('Connect to session', () => {
     });
 
     it('should not be able to connect with an invalid authorization header', () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
             unauthenticatedClient = connect(socketUrl);
 
-            unauthenticatedClient.on('disconnect', () => {
-                expect(true).toBeTrue();
-                resolve(true);
-                unauthenticatedClient.disconnect().close();
+            unauthenticatedClient.on('disconnect', (reason: string) => {
+                expect(reason).toBe('io server disconnect');
+                resolve(reason);
             });
+
+            unauthenticatedClient.on('error', reject);
+            unauthenticatedClient.on('exception', reject);
         }));
 
     it('should be able to connect with a valid authorization header', () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
             client = connect(socketUrl, {
                 transportOptions: { polling: { extraHeaders: { authorization: `Bearer ${clientToken}` } } },
             });
 
             client.on('connect', () => {
-                expect(true).toBeTrue();
-                resolve(true);
-                client.disconnect().close();
+                client.disconnect();
             });
+
+            client.on('disconnect', (reason: string) => {
+                expect(reason).toBe('io client disconnect');
+                resolve(reason);
+            });
+            client.on('error', reject);
+            client.on('exception', reject);
         }));
 });

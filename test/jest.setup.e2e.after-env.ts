@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { sign } from 'jsonwebtoken';
 import { ApplicationModule } from '../src/ApplicationModule';
 
@@ -9,6 +9,7 @@ import { ApplicationModule } from '../src/ApplicationModule';
 (global as any).socketUrl = `ws://localhost:${(global as any).socketPort}`;
 
 beforeAll(async () => {
+    Logger.overrideLogger([]);
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [ApplicationModule],
     }).compile();
