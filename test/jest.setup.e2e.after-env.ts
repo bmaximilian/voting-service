@@ -5,6 +5,8 @@ import { ApplicationModule } from '../src/ApplicationModule';
 
 (global as any).app = undefined;
 (global as any).validToken = undefined;
+(global as any).socketPort = 3002;
+(global as any).socketUrl = `ws://localhost:${(global as any).socketPort}`;
 
 beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -15,6 +17,7 @@ beforeAll(async () => {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     await app.init();
+    await app.listen((global as any).socketPort);
     (global as any).app = app;
 
     (global as any).validToken = sign({ sub: 'valid-user-id' }, 'internal-secret');

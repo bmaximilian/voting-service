@@ -66,6 +66,14 @@ describe('Session', () => {
         expect(session.getParticipants()).toContain(participant);
     });
 
+    it('should check if a participant by id is included in the session', () => {
+        const participant = new Participant('abc', 1, 'participantId');
+        session.setParticipants([participant]);
+
+        expect(session.hasParticipant('participantId')).toBeTrue();
+        expect(session.hasParticipant('notIncluded')).toBeFalse();
+    });
+
     it('should be able to add a participant', () => {
         expect(session.getParticipants()).toBeArray();
         expect(session.getParticipants()).toHaveLength(0);

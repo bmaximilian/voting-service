@@ -80,6 +80,10 @@ export class Session {
         return this;
     }
 
+    public hasParticipant(participantId: string): boolean {
+        return this.participants.findIndex((participant) => participant.getId() === participantId) > -1;
+    }
+
     public getTopics(): Topic[] {
         return this.topics;
     }

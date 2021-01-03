@@ -26,6 +26,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SSL_REDIRECTION_ENABLED: 0
+      JWT_CLIENT_TOKEN_SECRET: SuperSecret1
     volumes:
       - .:/opt/app
     ports:
