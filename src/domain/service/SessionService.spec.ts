@@ -229,4 +229,15 @@ describe('SessionService', () => {
 
         expect(persistenceService.save).not.toHaveBeenCalled();
     });
+
+    it('should find a session by id', async () => {
+        const session = new Session('clientId', new Date());
+        jest.spyOn(persistenceService, 'findById').mockResolvedValue(session);
+
+        const foundSession = await service.findById('mySession');
+
+        expect(persistenceService.findById).toHaveBeenCalledWith('mySession');
+        expect(persistenceService.findById).toHaveBeenCalledTimes(1);
+        expect(foundSession).toEqual(session);
+    });
 });

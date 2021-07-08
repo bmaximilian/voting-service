@@ -2,12 +2,14 @@ import { ArgumentsHost, HttpServer, Logger } from '@nestjs/common';
 import { createMock } from '@golevelup/nestjs-testing';
 import { TokenInvalidError } from '../../../infrastructure/security/jwt/TokenInvalidError';
 import { TokenNotFoundError } from '../../../infrastructure/security/jwt/TokenNotFoundError';
-import { SessionNotFoundException } from '../../../domain';
-import { ParticipantForMandateNotExistingException } from '../../../domain/exception/ParticipantForMandateNotExistingException';
-import { ParticipantAlreadyExistsException } from '../../../domain/exception/ParticipantAlreadyExistsException';
-import { ParticipantDuplicatedException } from '../../../domain/exception/ParticipantDuplicatedException';
-import { TopicAlreadyExistsException } from '../../../domain/exception/TopicAlreadyExistsException';
-import { TopicDuplicatedException } from '../../../domain/exception/TopicDuplicatedException';
+import {
+    ParticipantAlreadyExistsException,
+    ParticipantDuplicatedException,
+    ParticipantForMandateNotExistingException,
+    SessionNotFoundException,
+    TopicAlreadyExistsException,
+    TopicDuplicatedException,
+} from '../../../domain';
 import { ApiExceptionFilter } from './ApiExceptionFilter';
 
 describe('ApiExceptionFilter', () => {

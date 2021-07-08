@@ -57,6 +57,10 @@ export class SessionService {
             .find((savedParticipant) => savedParticipant.getExternalId() === participant.getExternalId());
     }
 
+    public async findById(sessionId: string): Promise<Session> {
+        return this.sessionPersistenceService.findById(sessionId);
+    }
+
     private validateParticipants(session: Session): void {
         const externalParticipantIds = new Set();
 
